@@ -10,7 +10,7 @@ package com.encosoft.conexion;
  * @author Saul
  */
 public class Conexion {
-    // crear mentd conectar
+    //probando//
     
-    // crear metodo desconectar
+    // este es otro ejemplo
 }
