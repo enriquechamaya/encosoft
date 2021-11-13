@@ -1,44 +1,42 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
-import com.encosoft.interfaces.ICategoria;
-import com.encosoft.modelo.Categoria;
+import com.encosoft.interfaces.IDetalleEncomienda;
+import com.encosoft.modelo.DetalleEncomienda;
 import com.encosoft.util.Constantes;
 import com.encosoft.util.ReusableValidacion;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 /**
- *
- * @author Saul
+ * @author echamaya
  */
-public class ControlCategorias extends ReusableValidacion implements ICategoria {
+public class ControlDetalleEncomienda extends ReusableValidacion implements IDetalleEncomienda {
 
     private static PreparedStatement ps;
     private static ResultSet rs;
     private static Conexion con;
 
-    public ControlCategorias() {
+    public ControlDetalleEncomienda() {
         con = Conexion.nuevaConexionDB();
     }
 
     @Override
-    public Boolean insertar(Categoria t) {
+    public Boolean insertar(DetalleEncomienda t) {
         Boolean resultado = false;
-        final String query = "insert into categorias values(?,?,?);";
+        final String query = "insert into detalle_encomienda values(?,?,?,?,?,?,?,?);";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setInt(1, t.getId());
-            ps.setString(2, t.getDescripcion());
-            ps.setInt(3, Constantes.ESTADO_ACTIVO);
+            ps.setInt(2, t.getIdencomienda());
+            ps.setInt(3, t.getIdproducto());
+            ps.setString(4, t.getDescripcion());
+            ps.setInt(5, t.getCantidad());
+            ps.setDouble(6, t.getPreciounitario());
+            ps.setInt(7, t.getPeso());
+            ps.setInt(8, Constantes.ESTADO_ACTIVO);
             resultado = ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("error insertar categorias: " + e.getMessage());
@@ -50,7 +48,7 @@ public class ControlCategorias extends ReusableValidacion implements ICategoria 
     }
 
     @Override
-    public Boolean actualizar(Categoria t) {
+    public Boolean actualizar(DetalleEncomienda t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -60,12 +58,12 @@ public class ControlCategorias extends ReusableValidacion implements ICategoria 
     }
 
     @Override
-    public Categoria obtenerPorId(Object id) {
+    public DetalleEncomienda obtenerPorId(Object id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Categoria> listar() {
+    public List<DetalleEncomienda> listar() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

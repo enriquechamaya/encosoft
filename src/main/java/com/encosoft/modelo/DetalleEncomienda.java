@@ -8,6 +8,8 @@ public class DetalleEncomienda {
     private String descripcion;
     private int cantidad;
     private double preciounitario;
+    private int peso;
+    private int estado;
 
     public int getId() {
         return id;
@@ -57,9 +59,25 @@ public class DetalleEncomienda {
         this.preciounitario = preciounitario;
     }
 
+    public int getPeso() {
+        return peso;
+    }
+
+    public void setPeso(int peso) {
+        this.peso = peso;
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
     @Override
     public String toString() {
-        return "DetalleEncomienda{" + "id=" + id + ", idencomienda=" + idencomienda + ", idproducto=" + idproducto + ", descripcion=" + descripcion + ", cantidad=" + cantidad + ", preciounitario=" + preciounitario + '}';
+        return "DetalleEncomienda{" + "id=" + id + ", idencomienda=" + idencomienda + ", idproducto=" + idproducto + ", descripcion=" + descripcion + ", cantidad=" + cantidad + ", preciounitario=" + preciounitario + ", peso=" + peso + ", estado=" + estado + '}';
     }
 
 }
