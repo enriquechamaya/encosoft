@@ -16,7 +16,7 @@ public class ControlEncomiendaTest {
         Encomienda e = new Encomienda();
         e.setIdagencia(1);
         e.setIdtipodocumento(1);
-        e.setNumerodocumento("740725228");
+        e.setNumerodocumento("11111111");
         e.setReceptorapepat("ENRIQUE");
         e.setReceptorapemat("VALDIVIA");
         e.setReceptornombres("FLORES");

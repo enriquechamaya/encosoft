@@ -11,7 +11,7 @@ public class ControlCategoriasTest {
     public static void main(String[] args) {
 
         Categoria c = new Categoria();
-        c.setDescripcion("BEBIDAS");
+        c.setDescripcion("LACTEOS");
 
         ControlCategorias cc = new ControlCategorias();
         Boolean resultado = cc.insertar(c);

@@ -23,7 +23,9 @@ tomcat
 *.class
 
 # Maven 
-target/
+target/generated-sources/
+target/maven-archiver/
+target/maven-status/
 
 # IntelliJ project files 
 *.iml
