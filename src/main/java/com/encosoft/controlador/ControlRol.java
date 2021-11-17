@@ -85,7 +85,7 @@ public class ControlRol implements ICrud<Rol> {
     @Override
     public List<Rol> obtenerPorId(Integer id) {
         List<Rol> lis = new ArrayList<>();
-
+       
         con = cn.getConexion();
 
         try {
@@ -103,14 +103,14 @@ public class ControlRol implements ICrud<Rol> {
                 u.setId(rs.getInt(1));
                 u.setDescripcion(rs.getString(2));
                 u.setEstado(rs.getInt(3));
-
+                
                 lis.add(u);
 
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return lis;
+        return  lis ;
     }
 
     @Override
