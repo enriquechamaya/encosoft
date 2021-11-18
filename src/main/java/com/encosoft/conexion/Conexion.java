@@ -7,24 +7,43 @@ package com.encosoft.conexion;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-
+/**
+ *
+ * @author Saul
+ */
 public class Conexion {
-      Connection con;
-    
-    public   Connection getConexion(){
-        try {                
-            Class.forName("com.mysql.jdbc.Driver");
-            //Verificar si su gestor de base de datos tiene una contraseña , si es asi agregarla despues de root
-            con = DriverManager.getConnection("jdbc:mysql://localhost/encosoft_db", "root", "");
-            System.out.println("Conexion exitosa");
-        } catch (ClassNotFoundException | SQLException ex ) {
-            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error de conexion "+ex);
+
+    private static Conexion instancia = null;
+    private static Connection con;
+    private static final String URL = "jdbc:mysql://localhost:3306/encosoft_db";
+    private static final String DRIVER = "com.mysql.jdbc.Driver";
+    private static final String USER = "tcipos";
+    private static final String PASS = "12345";
+
+    private Conexion() {
+        try {
+            Class.forName(DRIVER).newInstance();
+            con = DriverManager.getConnection(URL, USER, PASS);
+            System.out.println("conectado a la bd");
+        } catch (Exception e) {
+            System.out.println("error al establecer la conexión");
+            e.printStackTrace();
         }
+    }
+
+    public synchronized static Conexion nuevaConexionDB() {
+        if (instancia == null) {
+            instancia = new Conexion();
+        }
+        return instancia;
+    }
+
+    public Connection obtenerConexion() {
         return con;
+    }
+
+    public void cerrarConexion() {
+        instancia = null;
     }
 }
