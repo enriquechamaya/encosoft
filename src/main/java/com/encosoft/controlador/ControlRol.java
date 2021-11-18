@@ -6,7 +6,8 @@
 package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
-import com.encosoft.interfaces.ICrud;
+
+import com.encosoft.interfaces.*;
 import com.encosoft.modelo.Rol;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,7 +20,7 @@ import javax.swing.JOptionPane;
  *
  * @author Saul
  */
-public class ControlRol implements ICrud<Rol> {
+public class ControlRol  implements ICrud<Rol> {
 
     Conexion cn = new Conexion();
     Connection con;
