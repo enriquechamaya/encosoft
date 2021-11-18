@@ -1,5 +1,7 @@
 package com.encosoft.modelo;
 
+import java.util.List;
+
 public class Encomienda {
 
     private int id;
@@ -12,6 +14,7 @@ public class Encomienda {
     private int idcliente;
     private String fecha;
     private double preciototal;
+    private List<DetalleEncomienda> detalleEncomiendas;
 
     public int getId() {
         return id;
@@ -91,6 +94,14 @@ public class Encomienda {
 
     public void setPreciototal(double preciototal) {
         this.preciototal = preciototal;
+    }
+
+    public List<DetalleEncomienda> getDetalleEncomiendas() {
+        return detalleEncomiendas;
+    }
+
+    public void setDetalleEncomiendas(List<DetalleEncomienda> detalleEncomiendas) {
+        this.detalleEncomiendas = detalleEncomiendas;
     }
 
     @Override
