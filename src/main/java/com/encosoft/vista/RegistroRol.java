@@ -22,11 +22,6 @@ public class RegistroRol extends javax.swing.JInternalFrame {
 
     ControlRol obj = new ControlRol();
 
-    Conexion cn = new Conexion();
-    Connection con;
-    PreparedStatement ps;
-    ResultSet rs;
-
     public RegistroRol() {
         initComponents();
         muestra();
