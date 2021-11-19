@@ -6,16 +6,15 @@
 package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
-import com.encosoft.interfaces.ICrud;
+import com.encosoft.interfaces.IProductos;
 import com.encosoft.modelo.Productos;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 
-public class ControlProductos implements ICrud<Productos> {
+public class ControlProductos implements IProductos {
 
     private static PreparedStatement ps;
     private static ResultSet rs;
@@ -68,13 +67,13 @@ public class ControlProductos implements ICrud<Productos> {
     }
 
     @Override
-    public Boolean eliminar(int id) {
+    public Boolean eliminar(Object id) {
 
         try {//?=representa un parametro que se va arelacionar con el objeto p
             String sql = "delete from productos where id=?";
             //preparar una instruccion para ejecutar la cadena sql
             ps = con.obtenerConexion().prepareStatement(sql);
-            ps.setInt(1, id);
+            ps.setInt(1, Integer.parseInt(id.toString()));
             ps.executeUpdate(); //ejecutar la instruccion st
         } catch (Exception ex) {
             ex.printStackTrace();//muestra el error
@@ -114,13 +113,13 @@ public class ControlProductos implements ICrud<Productos> {
 
     @Override
     public List<Productos> listar() {
-      List<Productos> lis = new ArrayList<>();
+        List<Productos> lis = new ArrayList<>();
 
         try {
-         
+
             String sql = "select id,idcategoria,descripcion,estado from productos";
             //? =equivale a un parametro
-             ps = con.obtenerConexion().prepareStatement(sql);
+            ps = con.obtenerConexion().prepareStatement(sql);
             //st.setString(1,id);
             //relacionar el ? con su variable
             rs = ps.executeQuery();
@@ -132,12 +131,16 @@ public class ControlProductos implements ICrud<Productos> {
                 u.setDescripcion(rs.getString(3));
                 u.setEstado(rs.getInt(4));
 
-
                 lis.add(u);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return lis;
+    }
+
+    @Override
+    public Productos obtenerPorId(Object id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

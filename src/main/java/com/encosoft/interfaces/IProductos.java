@@ -4,23 +4,10 @@
  * and open the template in the editor.
  */
 package com.encosoft.interfaces;
-
+import com.encosoft.modelo.Productos;
+import com.encosoft.modelo.Rol;
 import java.util.List;
 
-/**
- *
- * @author echamaya
- */
-public interface ICrud<T> {
-
-    Boolean insertar(T t);
-
-    Boolean actualizar(T t);
-
-    Boolean eliminar(Object id);
-
-    T obtenerPorId(Object id);
-
-    List<T> listar();
-
+public interface IProductos extends ICrud<Productos>{
+    List<Productos> obtenerPorId(Integer id);
 }
