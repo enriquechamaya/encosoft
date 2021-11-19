@@ -9,7 +9,6 @@ import com.encosoft.conexion.Conexion;
 
 import com.encosoft.interfaces.*;
 import com.encosoft.modelo.Rol;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import javax.swing.JOptionPane;
  *
  * @author Saul
  */
-public class ControlRol  implements ICrud<Rol> {
+public class ControlRol implements IRol {
 
     private static PreparedStatement ps;
     private static ResultSet rs;
@@ -69,12 +68,12 @@ public class ControlRol  implements ICrud<Rol> {
     }
 
     @Override
-    public Boolean eliminar(int id) {
+    public Boolean eliminar(Object id) {
         try {//?=representa un parametro que se va arelacionar con el objeto p
             String sql = "delete from rol where id=?";
             //preparar una instruccion para ejecutar la cadena sql
             ps = con.obtenerConexion().prepareStatement(sql);
-            ps.setInt(1, id);
+            ps.setInt(1, Integer.parseInt(id.toString()));
             ps.executeUpdate(); //ejecutar la instruccion st
         } catch (Exception ex) {
             ex.printStackTrace();//muestra el error
@@ -134,6 +133,16 @@ public class ControlRol  implements ICrud<Rol> {
             ex.printStackTrace();
         }
         return lis;
+    }
+
+    @Override
+    public Boolean eliminar(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Rol obtenerPorId(Object id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -8,7 +8,6 @@ package com.encosoft.controlador;
 import com.encosoft.conexion.Conexion;
 import com.encosoft.interfaces.ICrud;
 import com.encosoft.modelo.Categoria;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -18,8 +17,9 @@ import java.util.List;
  *
  * @author Saul
  */
-public class ControlCategorias implements ICrud<Categoria>{
-      private static PreparedStatement ps;
+public class ControlCategorias implements ICrud<Categoria> {
+
+    private static PreparedStatement ps;
     private static ResultSet rs;
     private static Conexion con;
 
@@ -38,21 +38,11 @@ public class ControlCategorias implements ICrud<Categoria>{
     }
 
     @Override
-    public Boolean eliminar(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public List<Categoria> obtenerPorId(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public List<Categoria> listar() {
-      List<Categoria> lis = new ArrayList<>();
+        List<Categoria> lis = new ArrayList<>();
 
         try {
-         
+
             String sql = "select id,descripcion,estado from categorias";
             //? =equivale a un parametro
             ps = con.obtenerConexion().prepareStatement(sql);
@@ -73,5 +63,15 @@ public class ControlCategorias implements ICrud<Categoria>{
         }
         return lis;
     }
-    
+
+    @Override
+    public Boolean eliminar(Object id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Categoria obtenerPorId(Object id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

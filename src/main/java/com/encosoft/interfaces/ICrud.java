@@ -17,9 +17,9 @@ public interface ICrud<T> {
 
     Boolean actualizar(T t);
 
-    Boolean eliminar(int id);
+    Boolean eliminar(Object id);
 
-    List<T> obtenerPorId(Integer id);
+    T obtenerPorId(Object id);
 
     List<T> listar();
 
