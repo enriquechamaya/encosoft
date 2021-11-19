@@ -15,5 +15,4 @@ import java.util.List;
 public interface IRol  extends ICrud<Rol>{
       
     List<Rol> obtenerPorId(Integer id);
-    Boolean eliminar(int id);
 }
