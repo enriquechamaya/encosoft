@@ -19,11 +19,13 @@ import java.util.List;
  * @author Saul
  */
 public class ControlCategorias implements ICrud<Categoria>{
-    
-       Conexion cn = new Conexion();
-    Connection con;
-    PreparedStatement ps;
-    ResultSet rs;
+      private static PreparedStatement ps;
+    private static ResultSet rs;
+    private static Conexion con;
+
+    public ControlCategorias() {
+        con = Conexion.nuevaConexionDB();
+    }
 
     @Override
     public Boolean insertar(Categoria t) {
@@ -50,10 +52,10 @@ public class ControlCategorias implements ICrud<Categoria>{
       List<Categoria> lis = new ArrayList<>();
 
         try {
-            con = cn.getConexion();
+         
             String sql = "select id,descripcion,estado from categorias";
             //? =equivale a un parametro
-            ps = con.prepareStatement(sql);
+            ps = con.obtenerConexion().prepareStatement(sql);
             //st.setString(1,id);
             //relacionar el ? con su variable
             rs = ps.executeQuery();

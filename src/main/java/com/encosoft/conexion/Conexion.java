@@ -18,8 +18,8 @@ public class Conexion {
     private static Connection con;
     private static final String URL = "jdbc:mysql://localhost:3306/encosoft_db";
     private static final String DRIVER = "com.mysql.jdbc.Driver";
-    private static final String USER = "tcipos";
-    private static final String PASS = "12345";
+    private static final String USER = "root";
+    private static final String PASS = "";
 
     private Conexion() {
         try {

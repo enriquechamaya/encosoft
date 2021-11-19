@@ -25,10 +25,7 @@ public class RegistroProductos extends javax.swing.JInternalFrame {
     ControlProductos obj = new ControlProductos();
     ControlCategorias obj2 = new ControlCategorias();
 
-    Conexion cn = new Conexion();
-    Connection con;
-    PreparedStatement ps;
-    ResultSet rs;
+   
 
     public RegistroProductos() {
         initComponents();
