@@ -5,14 +5,15 @@
  */
 package com.encosoft.interfaces;
 
-import com.encosoft.modelo.Encomienda;
+import com.encosoft.modelo.Rol;
 import java.util.List;
 
 /**
  *
- * @author echamaya
+ * @author Saul
  */
-public interface IEncomienda extends ICrud<Encomienda>{
+public interface IRol  extends ICrud<Rol>{
       
- 
+    List<Rol> obtenerPorId(Integer id);
+    Boolean eliminar(int id);
 }
