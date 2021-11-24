@@ -24,5 +24,6 @@ public class Constantes {
     // mensaje advertencia
     public static final String MENSAJE_REGISTRO_NO_SELECCIONADO = "Debe seleccionar un registro";
     public static final String MENSAJE_CAMPO_VACIO = "El campo %s está vacío";
+    public static final String MENSAJE_CAMPOS_VACIOS = "Existen campos vacíos";
 
 }

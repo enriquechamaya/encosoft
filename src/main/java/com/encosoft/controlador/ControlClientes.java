@@ -59,7 +59,7 @@ public class ControlClientes extends ReusableValidacion implements ICliente {
     @Override
     public Boolean actualizar(Cliente t) {
         Boolean resultado = false;
-        final String query = "update clientes set nombre=?,apepat=?,apemat=?,idtipodoc=?,nrodocumento=?,email=?,celular=?,direccion=?,estado=?, where id=?;";
+        final String query = "update clientes set nombre=?,apepat=?,apemat=?,idtipodoc=?,nrodocumento=?,email=?,celular=?,direccion=?,estado=? where id=?;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setString(1, t.getNombre());
@@ -151,6 +151,37 @@ public class ControlClientes extends ReusableValidacion implements ICliente {
             }
         } catch (SQLException e) {
             System.out.println("error listar Clientes: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lista;
+    }
+
+    @Override
+    public List<Cliente> listarPorCliente(String descripcion) {
+        List<Cliente> lista = new ArrayList<>();
+        final String query = "select * from clientes where apepat like ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setString(1, descripcion + "%");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Cliente cliente = new Cliente();
+                cliente.setId(rs.getInt(1));
+                cliente.setNombre(rs.getString(2));
+                cliente.setApepat(rs.getString(3));
+                cliente.setApemat(rs.getString(4));
+                cliente.setIdtipodoc(rs.getInt(5));
+                cliente.setNrodocumento(rs.getString(6));
+                cliente.setEmail(rs.getString(7));
+                cliente.setCelular(rs.getString(8));
+                cliente.setDireccion(rs.getString(9));
+                cliente.setEstado(rs.getInt(10));
+                lista.add(cliente);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar listarPorCliente: " + e.getMessage());
             e.printStackTrace();
         } finally {
             cerrarConexiones(rs, ps, con);

@@ -49,6 +49,12 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
         if (esActualizar) {
             limpiar();
         } else {
+            if (Utilitario.validarCamposVacios(txtDescripcion)) {
+                return;
+            }
+            if (Utilitario.validarCamposVacios(cboEstado)) {
+                return;
+            }
             TipoDocumento td = new TipoDocumento();
             td.setDescripcion(txtDescripcion.getText());
 
@@ -61,7 +67,6 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
                 Utilitario.MensajeErrorGenerico();
             }
         }
-
     }
 
     void obtenerTipoDocumento() {
@@ -75,7 +80,13 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
 
     void editar() {
         int fila = tblTipoDocumento.getSelectedRow();
-        if (fila > 0) {
+        if (fila >= 0) {
+            if (Utilitario.validarCamposVacios(txtDescripcion)) {
+                return;
+            }
+            if (Utilitario.validarCamposVacios(cboEstado)) {
+                return;
+            }
             TipoDocumento td = new TipoDocumento();
             td.setId(Integer.parseInt(txtId.getText()));
             td.setDescripcion(txtDescripcion.getText());
@@ -109,7 +120,7 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
 
     void eliminar() {
         int fila = tblTipoDocumento.getSelectedRow();
-        if (fila > 0) {
+        if (fila >= 0) {
             int id = Integer.parseInt(tblTipoDocumento.getValueAt(fila, 0).toString());
             boolean esExito = controlTipoDocumento.eliminar(id);
             if (esExito) {
@@ -125,10 +136,8 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
     }
 
     void limpiar() {
-        txtDescripcion.setText("");
-        txtBusqueda.setText("");
-        txtDescripcion.requestFocus();
-        cboEstado.setSelectedIndex(0);
+        Utilitario.limpiarTextbox(txtDescripcion, txtBusqueda);
+        Utilitario.limpiarCombobox(cboEstado);
         tblTipoDocumento.clearSelection();
         esActualizar = false;
         cambiarBotonGuardar();
@@ -221,7 +230,7 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
                 btnListarTodoActionPerformed(evt);
             }
         });
-        getContentPane().add(btnListarTodo, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 210, -1, -1));
+        getContentPane().add(btnListarTodo, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 210, -1, -1));
 
         jLabel11.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
         jLabel11.setText("Busca:");

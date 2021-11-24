@@ -4,7 +4,7 @@ package com.encosoft.util;
  * @author echamaya
  */
 public enum EstadoEnum {
-    SELECCIONAR(-1, "SELECCIONAR"), ACTIVO(1, "ACTIVO"), INACTIVO(0, "INACTIVO");
+    ACTIVO(1, "ACTIVO"), INACTIVO(0, "INACTIVO");
 
     private EstadoEnum(int id, String descripcion) {
         this.id = id;

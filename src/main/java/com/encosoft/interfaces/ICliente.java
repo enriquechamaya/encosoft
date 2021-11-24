@@ -6,11 +6,14 @@
 package com.encosoft.interfaces;
 
 import com.encosoft.modelo.Cliente;
+import java.util.List;
 
 /**
  *
  * @author echamaya
  */
-public interface ICliente extends ICrud<Cliente>{
-    
+public interface ICliente extends ICrud<Cliente> {
+
+    List<Cliente> listarPorCliente(String descripcion);
+
 }

@@ -1,9 +1,12 @@
 package com.encosoft.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 
 /**
  * @author echamaya
@@ -40,15 +43,20 @@ public class Utilitario {
                 Constantes.TITULO_MENSAJE, Constantes.ESTILO_MENSAJE_ADVERTENCIA);
     }
 
+    public static void MensajeCamposVacios() {
+        JOptionPane.showMessageDialog(null, String.format(Constantes.MENSAJE_CAMPOS_VACIOS),
+                Constantes.TITULO_MENSAJE, Constantes.ESTILO_MENSAJE_ADVERTENCIA);
+    }
+
     public static Map<Integer, String> estadosLista() {
         Map<Integer, String> estados = new HashMap<>();
-        estados.put(EstadoEnum.SELECCIONAR.getId(), EstadoEnum.SELECCIONAR.getDescripcion());
         estados.put(EstadoEnum.ACTIVO.getId(), EstadoEnum.ACTIVO.getDescripcion());
         estados.put(EstadoEnum.INACTIVO.getId(), EstadoEnum.INACTIVO.getDescripcion());
         return estados;
     }
 
     public static void LlenarComboBoxEstado(JComboBox combo) {
+        combo.addItem("SELECCIONAR");
         estadosLista().forEach((k, v) -> {
             combo.addItem(v);
         });
@@ -60,7 +68,7 @@ public class Utilitario {
                 return estados.getKey();
             }
         }
-        return -2;
+        return -1;
     }
 
     public static void setearDescripcionEstado(JComboBox combo, Object valor) {
@@ -68,6 +76,85 @@ public class Utilitario {
             if (estados.getKey().intValue() == Integer.parseInt(valor.toString())) {
                 combo.setSelectedItem(estados.getValue());
             }
+        }
+    }
+
+    public static boolean validarCamposVacios(JTextField... textboxList) {
+        if (textboxList.length > 0) {
+            for (JTextField texto : textboxList) {
+                if (texto.getText().trim().isEmpty()) {
+                    MensajeCamposVacios();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean validarCamposVacios(JComboBox... combos) {
+        if (combos.length > 0) {
+            for (JComboBox combo : combos) {
+                if (combo.getSelectedIndex() == 0) {
+                    MensajeCamposVacios();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void limpiarTextbox(JTextField... textboxList) {
+        for (JTextField texto : textboxList) {
+            texto.setText("");
+        }
+    }
+
+    public static void limpiarCombobox(JComboBox... combos) {
+        for (JComboBox combo : combos) {
+            combo.setSelectedIndex(0);
+        }
+    }
+
+    public static int obtenerIdDesdeCombobox(Map<Integer, String> lista, JComboBox combo) {
+        for (Map.Entry<Integer, String> obj : lista.entrySet()) {
+            if (combo.getSelectedItem().equals(obj.getValue())) {
+                return obj.getKey();
+            }
+        }
+        return -1;
+    }
+
+    public static int obtenerIdComboBox(Map<Integer, String> map, JComboBox combo) {
+        for (Map.Entry<Integer, String> obj : map.entrySet()) {
+            if (combo.getSelectedItem().equals(obj.getValue())) {
+                return obj.getKey();
+            }
+        }
+        return -1;
+    }
+
+    public static String obtenerDescripcionComboBox(Map<Integer, String> map, int id) {
+        for (Map.Entry<Integer, String> obj : map.entrySet()) {
+            if (obj.getKey() == id) {
+                return obj.getValue();
+            }
+        }
+        return null;
+    }
+
+    public static String concatenar(String... cadenas) {
+        StringBuilder concatenado = new StringBuilder();
+        for (String cadena : cadenas) {
+            concatenado.append(cadena);
+        }
+        return concatenado.toString();
+    }
+
+    public static void ocultarColumnas(JTable table, int... indicesColumnas) {
+        for (int indicesColumna : indicesColumnas) {
+            table.getColumnModel().getColumn(indicesColumna).setWidth(0);
+            table.getColumnModel().getColumn(indicesColumna).setMinWidth(0);
+            table.getColumnModel().getColumn(indicesColumna).setMaxWidth(0);
         }
     }
 }
