@@ -5,17 +5,133 @@
  */
 package com.encosoft.vista;
 
+import com.encosoft.controlador.ControlTipoDocumento;
+import com.encosoft.modelo.TipoDocumento;
+import com.encosoft.util.Utilitario;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Saul
  */
 public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
 
+    ControlTipoDocumento controlTipoDocumento = new ControlTipoDocumento();
+    boolean esActualizar = false;
+
     /**
      * Creates new form RegistroTipoDocumento
      */
     public RegistroTipoDocumento() {
         initComponents();
+        listarTipoDocumento(controlTipoDocumento.listar());
+        Utilitario.LlenarComboBoxEstado(cboEstado);
+        cambiarBotonGuardar();
+    }
+
+    void listarTipoDocumento(List<TipoDocumento> lista) {
+        DefaultTableModel modelo = new DefaultTableModel();
+        tblTipoDocumento.setModel(modelo);
+
+        modelo.addColumn("ID");
+        modelo.addColumn("DESCRIPCION");
+        modelo.addColumn("ESTADO");
+
+        modelo.setRowCount(0);
+        for (TipoDocumento td : lista) {
+            Object data[] = {td.getId(), td.getDescripcion(), (td.getEstado() == 1 ? "ACTIVO" : "INACTIVO")};
+            modelo.addRow(data);
+        }
+    }
+
+    void registrar() {
+        if (esActualizar) {
+            limpiar();
+        } else {
+            TipoDocumento td = new TipoDocumento();
+            td.setDescripcion(txtDescripcion.getText());
+
+            boolean esExito = controlTipoDocumento.insertar(td);
+            if (esExito) {
+                listarTipoDocumento(controlTipoDocumento.listar());
+                limpiar();
+                Utilitario.MensajeExitoGenerico();
+            } else {
+                Utilitario.MensajeErrorGenerico();
+            }
+        }
+
+    }
+
+    void obtenerTipoDocumento() {
+        int fila = tblTipoDocumento.getSelectedRow();
+        txtId.setText(tblTipoDocumento.getValueAt(fila, 0).toString());
+        txtDescripcion.setText(tblTipoDocumento.getValueAt(fila, 1).toString());
+        cboEstado.setSelectedItem(tblTipoDocumento.getValueAt(fila, 2).toString());
+        esActualizar = true;
+        cambiarBotonGuardar();
+    }
+
+    void editar() {
+        int fila = tblTipoDocumento.getSelectedRow();
+        if (fila > 0) {
+            TipoDocumento td = new TipoDocumento();
+            td.setId(Integer.parseInt(txtId.getText()));
+            td.setDescripcion(txtDescripcion.getText());
+            td.setEstado(Utilitario.obtenerIdEstado(cboEstado));
+
+            boolean esExito = controlTipoDocumento.actualizar(td);
+            if (esExito) {
+                listarTipoDocumento(controlTipoDocumento.listar());
+                limpiar();
+                Utilitario.MensajeActualizacionExitoGenerico();
+            } else {
+                Utilitario.MensajeErrorGenerico();
+            }
+        } else {
+            Utilitario.MensajeSeleccionarRegistro();
+        }
+    }
+
+    void cambiarBotonGuardar() {
+        if (esActualizar) {
+            btnGuardar.setText("Nuevo");
+            lblEstado.setVisible(true);
+            cboEstado.setVisible(true);
+        } else {
+            txtId.setText("AUTOGENERADO");
+            btnGuardar.setText("Guardar");
+            lblEstado.setVisible(false);
+            cboEstado.setVisible(false);
+        }
+    }
+
+    void eliminar() {
+        int fila = tblTipoDocumento.getSelectedRow();
+        if (fila > 0) {
+            int id = Integer.parseInt(tblTipoDocumento.getValueAt(fila, 0).toString());
+            boolean esExito = controlTipoDocumento.eliminar(id);
+            if (esExito) {
+                listarTipoDocumento(controlTipoDocumento.listar());
+                limpiar();
+                Utilitario.MensajeEliminacionExitoGenerico();
+            } else {
+                Utilitario.MensajeErrorGenerico();
+            }
+        } else {
+            Utilitario.MensajeSeleccionarRegistro();
+        }
+    }
+
+    void limpiar() {
+        txtDescripcion.setText("");
+        txtBusqueda.setText("");
+        txtDescripcion.requestFocus();
+        cboEstado.setSelectedIndex(0);
+        tblTipoDocumento.clearSelection();
+        esActualizar = false;
+        cambiarBotonGuardar();
     }
 
     /**
@@ -28,23 +144,24 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jComboBox3 = new javax.swing.JComboBox<>();
+        lblEstado = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
+        txtDescripcion = new javax.swing.JTextField();
+        cboEstado = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnGuardar = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
-        jButton4 = new javax.swing.JButton();
+        btnListarTodo = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
-        jTextField10 = new javax.swing.JTextField();
+        txtBusqueda = new javax.swing.JTextField();
         jSeparator3 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblTipoDocumento = new javax.swing.JTable();
         jSeparator4 = new javax.swing.JSeparator();
+        btnBusqueda = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -56,44 +173,63 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
         jLabel1.setText("ID:");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(39, 27, -1, -1));
 
-        jLabel2.setText("Estado");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
+        lblEstado.setText("Estado");
+        getContentPane().add(lblEstado, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
 
-        jTextField2.setEnabled(false);
-        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 100, -1));
-        getContentPane().add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 100, -1));
+        txtId.setEnabled(false);
+        getContentPane().add(txtId, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 160, -1));
+        getContentPane().add(txtDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 160, -1));
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione:", "Activo", "Inactivo" }));
-        getContentPane().add(jComboBox3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 90, 100, -1));
+        getContentPane().add(cboEstado, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 90, 160, -1));
 
         jLabel3.setText("Decripcion:");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, -1, -1));
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/guardar.png"))); // NOI18N
-        jButton1.setText("Guardar");
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 150, 110, -1));
+        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/guardar.png"))); // NOI18N
+        btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 150, 110, -1));
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/editar.png"))); // NOI18N
-        jButton2.setText("Editar");
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, 110, -1));
+        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/editar.png"))); // NOI18N
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, 110, -1));
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/elimina.png"))); // NOI18N
-        jButton3.setText("Elimina");
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 150, 110, -1));
+        btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/elimina.png"))); // NOI18N
+        btnEliminar.setText("Elimina");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 150, 110, -1));
         getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 590, 20));
         getContentPane().add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 570, 20));
 
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa.png"))); // NOI18N
-        jButton4.setText("Mostrar Tipo Dcoumento");
-        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 220, -1, -1));
+        btnListarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa.png"))); // NOI18N
+        btnListarTodo.setText("Listar todo");
+        btnListarTodo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListarTodoActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnListarTodo, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 210, -1, -1));
 
         jLabel11.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
         jLabel11.setText("Busca:");
         getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, -1, -1));
-        getContentPane().add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 90, -1));
+        getContentPane().add(txtBusqueda, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 170, -1));
         getContentPane().add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 200, 570, 20));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblTipoDocumento.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -101,33 +237,76 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
                 "ID", "Descripcion", "Estado"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        tblTipoDocumento.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblTipoDocumentoMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblTipoDocumento);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 520, 130));
         getContentPane().add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 570, 20));
 
+        btnBusqueda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa.png"))); // NOI18N
+        btnBusqueda.setText("Buscar");
+        btnBusqueda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBusquedaActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnBusqueda, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 210, -1, -1));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        registrar();
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        editar();
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void tblTipoDocumentoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTipoDocumentoMouseClicked
+        obtenerTipoDocumento();
+    }//GEN-LAST:event_tblTipoDocumentoMouseClicked
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        eliminar();
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnListarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarTodoActionPerformed
+        listarTipoDocumento(controlTipoDocumento.listar());
+    }//GEN-LAST:event_btnListarTodoActionPerformed
+
+    private void btnBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBusquedaActionPerformed
+        if (!txtBusqueda.getText().isEmpty()) {
+            listarTipoDocumento(controlTipoDocumento.listarPorDescripcion(txtBusqueda.getText().trim()));
+        } else {
+            Utilitario.MensajeCampoVacio("busqueda");
+        }
+    }//GEN-LAST:event_btnBusquedaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox<String> jComboBox3;
+    private javax.swing.JButton btnBusqueda;
+    private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnListarTodo;
+    private javax.swing.JComboBox<String> cboEstado;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField10;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JLabel lblEstado;
+    private javax.swing.JTable tblTipoDocumento;
+    private javax.swing.JTextField txtBusqueda;
+    private javax.swing.JTextField txtDescripcion;
+    private javax.swing.JTextField txtId;
     // End of variables declaration//GEN-END:variables
 }

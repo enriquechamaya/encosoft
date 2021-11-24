@@ -6,6 +6,7 @@
 package com.encosoft.interfaces;
 
 import com.encosoft.modelo.TipoDocumento;
+import java.util.List;
 
 /**
  *
@@ -13,4 +14,5 @@ import com.encosoft.modelo.TipoDocumento;
  */
 public interface ITipoDocumento extends ICrud<TipoDocumento> {
 
+    List<TipoDocumento> listarPorDescripcion(String descripcion);
 }

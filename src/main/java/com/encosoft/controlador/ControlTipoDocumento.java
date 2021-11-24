@@ -7,7 +7,6 @@ package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
 import com.encosoft.interfaces.ITipoDocumento;
-import com.encosoft.modelo.Categoria;
 import com.encosoft.modelo.TipoDocumento;
 import com.encosoft.util.Constantes;
 import com.encosoft.util.ReusableValidacion;
@@ -53,7 +52,7 @@ public class ControlTipoDocumento extends ReusableValidacion implements ITipoDoc
     @Override
     public Boolean actualizar(TipoDocumento t) {
         Boolean resultado = false;
-        final String query = "update categorias set tipo_documento = ?, estado = ? where id = ?;";
+        final String query = "update tipo_documento set descripcion = ?, estado = ? where id = ?;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setString(1, t.getDescripcion());
@@ -114,6 +113,30 @@ public class ControlTipoDocumento extends ReusableValidacion implements ITipoDoc
         final String query = "select * from tipo_documento;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                TipoDocumento tipoDocumento = new TipoDocumento();
+                tipoDocumento.setId(rs.getInt(1));
+                tipoDocumento.setDescripcion(rs.getString(2));
+                tipoDocumento.setEstado(rs.getInt(3));
+                lista.add(tipoDocumento);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar tipo_documento: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lista;
+    }
+
+    @Override
+    public List<TipoDocumento> listarPorDescripcion(String descripcion) {
+        List<TipoDocumento> lista = new ArrayList<>();
+        final String query = "select * from tipo_documento where descripcion like ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setString(1, descripcion + "%");
             rs = ps.executeQuery();
             while (rs.next()) {
                 TipoDocumento tipoDocumento = new TipoDocumento();
