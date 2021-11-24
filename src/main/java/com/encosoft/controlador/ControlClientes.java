@@ -131,7 +131,7 @@ public class ControlClientes extends ReusableValidacion implements ICliente {
     @Override
     public List<Cliente> listar() {
         List<Cliente> lista = new ArrayList<>();
-        final String query = "select * from clientes where estado = 1;";
+        final String query = "select * from clientes;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             rs = ps.executeQuery();

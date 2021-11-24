@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,22 +64,107 @@ public class ControlEncomienda extends ReusableValidacion implements IEncomienda
 
     @Override
     public Boolean actualizar(Encomienda t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Boolean resultado = false;
+        final String query = "update encomienda set idagencia=?,idtipodoc=?,nrodocumento=?,receptorapepat=?,receptorapemat=?,receptornombre=?,idcliente=?,fecha=?,preciototal=?,estado=? where id=?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setInt(1, t.getIdagencia());
+            ps.setInt(2, t.getIdtipodocumento());
+            ps.setString(3, t.getNumerodocumento());
+            ps.setString(4, t.getReceptorapepat());
+            ps.setString(5, t.getReceptorapemat());
+            ps.setString(6, t.getReceptornombres());
+            ps.setInt(7, t.getIdcliente());
+            ps.setString(8, t.getFecha());
+            ps.setDouble(8, t.getPreciototal());
+            ps.setInt(9, Constantes.ESTADO_ACTIVO);
+            ps.setInt(10, t.getId());
+            resultado = ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("error actualizar encomienda: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return resultado;
     }
 
     @Override
     public List<Encomienda> listar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Encomienda> lista = new ArrayList<>();
+        final String query = "select * from encomienda;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Encomienda encomienda = new Encomienda();
+                encomienda.setId(rs.getInt(1));
+                encomienda.setIdagencia(rs.getInt(2));
+                encomienda.setIdtipodocumento(rs.getInt(3));
+                encomienda.setNumerodocumento(rs.getString(4));
+                encomienda.setReceptorapepat(rs.getString(5));
+                encomienda.setReceptorapemat(rs.getString(6));
+                encomienda.setReceptornombres(rs.getString(7));
+                encomienda.setIdcliente(rs.getInt(8));
+                encomienda.setFecha(rs.getString(9));
+                encomienda.setPreciototal(rs.getInt(10));
+                encomienda.setEstado(rs.getInt(10));
+                lista.add(encomienda);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar encomienda: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lista;
     }
 
     @Override
     public Boolean eliminar(Object id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Boolean resultado = false;
+        final String query = "update encomienda set estado = 0 where id = ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(id.toString()));
+            resultado = ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("error eliminar clientes: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return resultado;
     }
 
     @Override
     public Encomienda obtenerPorId(Object id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Encomienda encomienda = new Encomienda();
+        final String query = "select * from encomienda where id = ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(id.toString()));
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                encomienda.setId(rs.getInt(1));
+                encomienda.setIdagencia(rs.getInt(2));
+                encomienda.setIdtipodocumento(rs.getInt(3));
+                encomienda.setNumerodocumento(rs.getString(4));
+                encomienda.setReceptorapepat(rs.getString(5));
+                encomienda.setReceptorapemat(rs.getString(6));
+                encomienda.setReceptornombres(rs.getString(7));
+                encomienda.setIdcliente(rs.getInt(8));
+                encomienda.setFecha(rs.getString(9));
+                encomienda.setPreciototal(rs.getInt(10));
+                encomienda.setEstado(rs.getInt(10));
+            }
+        } catch (SQLException e) {
+            System.out.println("error obtenerPorId encomienda: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return encomienda;
     }
 
 }

@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.encosoft.controlador;
+package com.encosoft.interfaces;
+
+import com.encosoft.modelo.TipoDocumento;
 
 /**
  *
- * @author Saul
+ * @author echamaya
  */
-public class ControlDocumento {
-    
+public interface ITipoDocumento extends ICrud<TipoDocumento> {
+
 }

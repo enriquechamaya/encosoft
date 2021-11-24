@@ -71,7 +71,7 @@ public class ControlCategorias extends ReusableValidacion implements ICategoria 
     @Override
     public List<Categoria> listar() {
         List<Categoria> lista = new ArrayList<>();
-        final String query = "select * from categorias where estado = 1;";
+        final String query = "select * from categorias;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             rs = ps.executeQuery();

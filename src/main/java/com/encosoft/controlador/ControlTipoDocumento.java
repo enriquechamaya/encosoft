@@ -6,8 +6,9 @@
 package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
-import com.encosoft.interfaces.IAgencia;
-import com.encosoft.modelo.Agencia;
+import com.encosoft.interfaces.ITipoDocumento;
+import com.encosoft.modelo.Categoria;
+import com.encosoft.modelo.TipoDocumento;
 import com.encosoft.util.Constantes;
 import com.encosoft.util.ReusableValidacion;
 import java.sql.PreparedStatement;
@@ -20,20 +21,20 @@ import java.util.List;
  *
  * @author Saul
  */
-public class ControlAgencia extends ReusableValidacion implements IAgencia {
+public class ControlTipoDocumento extends ReusableValidacion implements ITipoDocumento {
 
     private static PreparedStatement ps;
     private static ResultSet rs;
     private static Conexion con;
 
-    public ControlAgencia() {
+    public ControlTipoDocumento() {
         con = Conexion.nuevaConexionDB();
     }
 
     @Override
-    public Boolean insertar(Agencia t) {
+    public Boolean insertar(TipoDocumento t) {
         Boolean resultado = false;
-        final String query = "insert into agencias values(?,?,?);";
+        final String query = "insert into tipo_documento values(?,?,?);";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setInt(1, t.getId());
@@ -41,7 +42,7 @@ public class ControlAgencia extends ReusableValidacion implements IAgencia {
             ps.setInt(3, Constantes.ESTADO_ACTIVO);
             resultado = ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("error insertar agencia: " + e.getMessage());
+            System.out.println("error insertar tipo_documento: " + e.getMessage());
             e.printStackTrace();
         } finally {
             cerrarConexiones(rs, ps, con);
@@ -50,9 +51,9 @@ public class ControlAgencia extends ReusableValidacion implements IAgencia {
     }
 
     @Override
-    public Boolean actualizar(Agencia t) {
+    public Boolean actualizar(TipoDocumento t) {
         Boolean resultado = false;
-        final String query = "update agencias set descripcion = ?, estado = ? where id = ?;";
+        final String query = "update categorias set tipo_documento = ?, estado = ? where id = ?;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setString(1, t.getDescripcion());
@@ -60,7 +61,7 @@ public class ControlAgencia extends ReusableValidacion implements IAgencia {
             ps.setInt(3, t.getId());
             resultado = ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("error actualizar agencia: " + e.getMessage());
+            System.out.println("error actualizar tipo_documento: " + e.getMessage());
             e.printStackTrace();
         } finally {
             cerrarConexiones(rs, ps, con);
@@ -71,13 +72,13 @@ public class ControlAgencia extends ReusableValidacion implements IAgencia {
     @Override
     public Boolean eliminar(Object id) {
         Boolean resultado = false;
-        final String query = "update agencias set estado = 0 where id = ?;";
+        final String query = "update tipo_documento set estado = 0 where id = ?;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setInt(1, Integer.parseInt(id.toString()));
             resultado = ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("error eliminar agencia: " + e.getMessage());
+            System.out.println("error eliminar tipo_documento: " + e.getMessage());
             e.printStackTrace();
         } finally {
             cerrarConexiones(rs, ps, con);
@@ -86,47 +87,48 @@ public class ControlAgencia extends ReusableValidacion implements IAgencia {
     }
 
     @Override
-    public Agencia obtenerPorId(Object id) {
-        Agencia agencia = new Agencia();
-        final String query = "select * from agencias where id = ?;";
+    public TipoDocumento obtenerPorId(Object id) {
+        TipoDocumento tipoDocumento = new TipoDocumento();
+        final String query = "select * from tipo_documento where id = ?;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setInt(1, Integer.parseInt(id.toString()));
             rs = ps.executeQuery();
             while (rs.next()) {
-                agencia.setId(rs.getInt(1));
-                agencia.setDescripcion(rs.getString(2));
-                agencia.setEstado(rs.getInt(3));
+                tipoDocumento.setId(rs.getInt(1));
+                tipoDocumento.setDescripcion(rs.getString(2));
+                tipoDocumento.setEstado(rs.getInt(3));
             }
         } catch (SQLException e) {
-            System.out.println("error obtenerPorId agencia: " + e.getMessage());
+            System.out.println("error obtenerPorId tipo_documento: " + e.getMessage());
             e.printStackTrace();
         } finally {
             cerrarConexiones(rs, ps, con);
         }
-        return agencia;
+        return tipoDocumento;
     }
 
     @Override
-    public List<Agencia> listar() {
-        List<Agencia> lista = new ArrayList<>();
-        final String query = "select * from agencias;";
+    public List<TipoDocumento> listar() {
+        List<TipoDocumento> lista = new ArrayList<>();
+        final String query = "select * from tipo_documento;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             rs = ps.executeQuery();
             while (rs.next()) {
-                Agencia agencia = new Agencia();
-                agencia.setId(rs.getInt(1));
-                agencia.setDescripcion(rs.getString(2));
-                agencia.setEstado(rs.getInt(3));
-                lista.add(agencia);
+                TipoDocumento tipoDocumento = new TipoDocumento();
+                tipoDocumento.setId(rs.getInt(1));
+                tipoDocumento.setDescripcion(rs.getString(2));
+                tipoDocumento.setEstado(rs.getInt(3));
+                lista.add(tipoDocumento);
             }
         } catch (SQLException e) {
-            System.out.println("error listar agencia: " + e.getMessage());
+            System.out.println("error listar tipo_documento: " + e.getMessage());
             e.printStackTrace();
         } finally {
             cerrarConexiones(rs, ps, con);
         }
         return lista;
     }
+
 }
