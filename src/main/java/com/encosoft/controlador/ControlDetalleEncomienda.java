@@ -18,6 +18,8 @@ public class ControlDetalleEncomienda extends ReusableValidacion implements IDet
     private static PreparedStatement ps;
     private static ResultSet rs;
     private static Conexion con;
+    
+    
 
     public ControlDetalleEncomienda() {
         con = Conexion.nuevaConexionDB();

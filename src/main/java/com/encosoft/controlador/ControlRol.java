@@ -9,17 +9,20 @@ import com.encosoft.conexion.Conexion;
 
 import com.encosoft.interfaces.*;
 import com.encosoft.modelo.Rol;
+import com.encosoft.util.Constantes;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import com.encosoft.util.ReusableValidacion;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
 
 /**
  *
  * @author Saul
  */
-public class ControlRol implements IRol {
+public class ControlRol extends ReusableValidacion implements IRol {
 
     private static PreparedStatement ps;
     private static ResultSet rs;
@@ -31,68 +34,75 @@ public class ControlRol implements IRol {
 
     @Override
     public Boolean insertar(Rol t) {
-        try {//?=representa un parametro que se va arelacionar con el objeto p
+        Boolean resultado = false;
 
-            String sql = "INSERT INTO rol (descripcion,estado) VALUES (?,?)";
-            //preparar una instruccion para ejecutar la cadena sql
-            ps = con.obtenerConexion().prepareStatement(sql);
+        final String query = "INSERT INTO rol (descripcion,estado) VALUES (?,?)";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
             ps.setString(1, t.getDescripcion());
-            ps.setInt(2, t.getEstado());
-
-            ps.executeUpdate(); //ejecutar la instruccion st
-            JOptionPane.showMessageDialog(null, "Registro Guardado con Exito");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "ERROR");
-            ex.printStackTrace();//muestra el error
+            ps.setInt(2, Constantes.ESTADO_ACTIVO);
+            resultado = ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("error insertar rol: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return false;
+        return resultado;
     }
 
     @Override
     public Boolean actualizar(Rol t) {
-        try {//?=representa un parametro que se va arelacionar con el objeto p
-            String sql = "update rol set descripcion=?,estado=? where id=?";
-            //preparar una instruccion para ejecutar la cadena sql
-            ps = con.obtenerConexion().prepareStatement(sql);
+        Boolean resultado = false;
+        final String query = "update rol set descripcion=?,estado=? where id=?";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
             ps.setString(1, t.getDescripcion());
             ps.setInt(2, t.getEstado());
             ps.setInt(3, t.getId());
 
-            ps.executeUpdate(); //ejecutar la instruccion st
+            resultado = ps.executeUpdate() > 0;
 
-        } catch (Exception ex) {
-
-            ex.printStackTrace();//muestra el error
+        } catch (SQLException e) {
+            System.out.println("error actualizar rol: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return false;
+        return resultado;
     }
 
     @Override
     public Boolean eliminar(Object id) {
-        try {//?=representa un parametro que se va arelacionar con el objeto p
-            String sql = "delete from rol where id=?";
-            //preparar una instruccion para ejecutar la cadena sql
-            ps = con.obtenerConexion().prepareStatement(sql);
+        Boolean resultado = false;
+        final String query = "update rol set estado= 0 where id=?";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
             ps.setInt(1, Integer.parseInt(id.toString()));
-            ps.executeUpdate(); //ejecutar la instruccion st
-        } catch (Exception ex) {
-            ex.printStackTrace();//muestra el error
+            resultado = ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("error eliminar rol: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return false;
+        return resultado;
     }
 
     @Override
     public List<Rol> obtenerPorId(Integer id) {
         List<Rol> lis = new ArrayList<>();
 
+        final String query = "select  *from rol where id=?";
         try {
-            String sql = "select  *from rol where id=?";
-            ps = con.obtenerConexion().prepareStatement(sql);
-            //ps.setInt(1, cod + "%");
+            ps = con.obtenerConexion().prepareStatement(query);
+
             ps.setInt(1, id);
-            //Los datos son llevados a la RAM
+
             rs = ps.executeQuery();
-            //llenar el arraylist con la clase entidad
+
             while (rs.next()) {
 
                 Rol u = new Rol();
@@ -103,24 +113,25 @@ public class ControlRol implements IRol {
                 lis.add(u);
 
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+       } catch (SQLException e) {
+            System.out.println("error obtenerPorId rol: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
         return lis;
     }
 
+
     @Override
     public List<Rol> listar() {
         List<Rol> lis = new ArrayList<>();
+        final String query = "select * from rol where estado = 1;";
 
         try {
-            String sql = "select id,descripcion,estado from rol";
-            //? =equivale a un parametro
-            ps = con.obtenerConexion().prepareStatement(sql);
-            //st.setString(1,id);
-            //relacionar el ? con su variable
+
+            ps = con.obtenerConexion().prepareStatement(query);
             rs = ps.executeQuery();
-            //llenar el arraylist con la clase entidad
             while (rs.next()) {
                 Rol u = new Rol();
                 u.setId(rs.getInt(1));
@@ -129,8 +140,11 @@ public class ControlRol implements IRol {
 
                 lis.add(u);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("error listar rol: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
         return lis;
     }
@@ -138,6 +152,33 @@ public class ControlRol implements IRol {
     @Override
     public Rol obtenerPorId(Object id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Rol> listarTodos() {
+        List<Rol> lis = new ArrayList<>();
+
+        final String query = "select id,descripcion,estado from rol";
+
+        try {
+
+            ps = con.obtenerConexion().prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Rol u = new Rol();
+                u.setId(rs.getInt(1));
+                u.setDescripcion(rs.getString(2));
+                u.setEstado(rs.getInt(3));
+
+                lis.add(u);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar roles: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lis;
     }
 
 }

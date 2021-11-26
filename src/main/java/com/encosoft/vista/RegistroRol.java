@@ -5,13 +5,8 @@
  */
 package com.encosoft.vista;
 
-import com.encosoft.conexion.Conexion;
 import com.encosoft.controlador.ControlRol;
 import com.encosoft.modelo.Rol;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -28,6 +23,15 @@ public class RegistroRol extends javax.swing.JInternalFrame {
     }
 
     void muestra() {
+        DefaultTableModel dt = (DefaultTableModel) TblRol.getModel();
+        dt.setRowCount(0);
+        for (Rol x : obj.listarTodos()) {
+            Object v[] = {x.getId(), x.getDescripcion(), x.getEstado()};
+            dt.addRow(v);
+        }
+    }
+
+    void muestraactivos() {
         DefaultTableModel dt = (DefaultTableModel) TblRol.getModel();
         dt.setRowCount(0);
         for (Rol x : obj.listar()) {
@@ -74,18 +78,19 @@ public class RegistroRol extends javax.swing.JInternalFrame {
         CboRol = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         btnGuardarRol = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
         BtnBuscar = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         txtbuscar = new javax.swing.JTextField();
-        jSeparator3 = new javax.swing.JSeparator();
+        btnActivos = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
         TblRol = new javax.swing.JTable();
         jSeparator4 = new javax.swing.JSeparator();
         jButton1 = new javax.swing.JButton();
+        btnListar = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -104,7 +109,7 @@ public class RegistroRol extends javax.swing.JInternalFrame {
         getContentPane().add(txtId, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 100, -1));
         getContentPane().add(txtDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 100, -1));
 
-        CboRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Activo", "Inactivo" }));
+        CboRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Inactivo", "Activo" }));
         CboRol.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CboRolActionPerformed(evt);
@@ -122,16 +127,16 @@ public class RegistroRol extends javax.swing.JInternalFrame {
                 btnGuardarRolActionPerformed(evt);
             }
         });
-        getContentPane().add(btnGuardarRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 150, 110, -1));
+        getContentPane().add(btnGuardarRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 140, 110, -1));
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/editar.png"))); // NOI18N
-        jButton2.setText("Editar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/editar.png"))); // NOI18N
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnEditarActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, 110, -1));
+        getContentPane().add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 140, 110, -1));
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/elimina.png"))); // NOI18N
         jButton3.setText("Eliminar");
@@ -140,7 +145,7 @@ public class RegistroRol extends javax.swing.JInternalFrame {
                 jButton3ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 150, 110, -1));
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 140, 110, -1));
         getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 590, 20));
         getContentPane().add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 570, 20));
 
@@ -157,7 +162,7 @@ public class RegistroRol extends javax.swing.JInternalFrame {
         jLabel11.setText("Busca:");
         getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, -1, -1));
         getContentPane().add(txtbuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 90, -1));
-        getContentPane().add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 200, 570, 20));
+        getContentPane().add(btnActivos, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 570, 20));
 
         TblRol.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -175,21 +180,30 @@ public class RegistroRol extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(TblRol);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 520, 130));
-        getContentPane().add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 570, 20));
+        getContentPane().add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 280, 570, 10));
 
-        jButton1.setText("Listar");
+        jButton1.setText("Listar Activos");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(499, 223, 70, 40));
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 200, 110, 30));
+
+        btnListar.setText("Listar Todos");
+        btnListar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnListar, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 240, 110, 30));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarRolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarRolActionPerformed
         Rol u = new Rol();
+
         u.setDescripcion(txtDescripcion.getText());
         u.setEstado(CboRol.getSelectedIndex());
 
@@ -200,14 +214,14 @@ public class RegistroRol extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_btnGuardarRolActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         Rol u = new Rol();
         u.setDescripcion(txtDescripcion.getText());
         u.setEstado(CboRol.getSelectedIndex());
         u.setId(Integer.parseInt(txtId.getText()));
         obj.actualizar(u);
         muestra();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnEditarActionPerformed
 
     private void TblRolMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TblRolMouseClicked
         // MODIFICAR DATOS CON MOUSE CLICK - el código debe estar de forma global
@@ -215,9 +229,9 @@ public class RegistroRol extends javax.swing.JInternalFrame {
         int fila = TblRol.getSelectedRow();//Devuelve la fila seleccionada
 
         txtId.setText(TblRol.getValueAt(fila, 0).toString());
+        
         txtDescripcion.setText(TblRol.getValueAt(fila, 1).toString());
-        CboRol.setSelectedItem(TblRol.getValueAt(fila, 2).toString());
-
+        CboRol.setSelectedIndex(Integer.parseInt(TblRol.getValueAt(fila, 2).toString()));
 
 
     }//GEN-LAST:event_TblRolMouseClicked
@@ -241,23 +255,28 @@ public class RegistroRol extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_BtnBuscarActionPerformed
 
     private void CboRolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CboRolActionPerformed
-        int s[] = {1, 2};
 
 
     }//GEN-LAST:event_CboRolActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       muestra();
+        muestraactivos();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarActionPerformed
+        muestra();
+    }//GEN-LAST:event_btnListarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnBuscar;
     private javax.swing.JComboBox<String> CboRol;
     private javax.swing.JTable TblRol;
+    private javax.swing.JSeparator btnActivos;
+    private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnGuardarRol;
+    private javax.swing.JButton btnListar;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
@@ -266,7 +285,6 @@ public class RegistroRol extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTextField txtDescripcion;
     private javax.swing.JTextField txtId;

@@ -6,11 +6,12 @@
 package com.encosoft.interfaces;
 
 import com.encosoft.modelo.Categoria;
+import java.util.List;
 
 /**
  *
  * @author echamaya
  */
 public interface ICategoria extends ICrud<Categoria> {
-    
+     List<Categoria> listarTodos();
 }

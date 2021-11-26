@@ -8,13 +8,17 @@ package com.encosoft.controlador;
 import com.encosoft.conexion.Conexion;
 import com.encosoft.interfaces.IProductos;
 import com.encosoft.modelo.Productos;
+import com.encosoft.util.Constantes;
+import com.encosoft.util.ReusableValidacion;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
 
-public class ControlProductos implements IProductos {
+
+public class ControlProductos extends ReusableValidacion implements IProductos {
 
     private static PreparedStatement ps;
     private static ResultSet rs;
@@ -26,74 +30,82 @@ public class ControlProductos implements IProductos {
 
     @Override
     public Boolean insertar(Productos t) {
+        Boolean resultado = false;
 
-        try {//?=representa un parametro que se va arelacionar con el objeto p
-
-            String sql = "INSERT INTO productos (idcategoria,descripcion,estado) VALUES (?,?,?)";
-            //preparar una instruccion para ejecutar la cadena sql
-            ps = con.obtenerConexion().prepareStatement(sql);
+        final String query = "INSERT INTO productos (idcategoria,descripcion,estado) VALUES (?,?,?)";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+       
             ps.setInt(1, t.getIdcategoria());
             ps.setString(2, t.getDescripcion());
-            ps.setInt(3, t.getEstado());
+            ps.setInt(3, Constantes.ESTADO_ACTIVO);
 
-            ps.executeUpdate(); //ejecutar la instruccion st
-            JOptionPane.showMessageDialog(null, "Registro Guardado con Exito");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "ERROR");
-            ex.printStackTrace();//muestra el error
+            resultado = ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("error insertar producto: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return false;
+        return resultado;
     }
 
     @Override
     public Boolean actualizar(Productos t) {
+        Boolean resultado = false;
 
-        try {//?=representa un parametro que se va arelacionar con el objeto p
-            String sql = "update productos set idcategoria=?,descripcion=?,estado=? where id=?";
-            //preparar una instruccion para ejecutar la cadena sql
-            ps = con.obtenerConexion().prepareStatement(sql);
+        final String query = "update productos set idcategoria=?,descripcion=?,estado=? where id=?";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
             ps.setInt(1, t.getIdcategoria());
             ps.setString(2, t.getDescripcion());
             ps.setInt(3, t.getEstado());
             ps.setInt(4, t.getId());
 
-            ps.executeUpdate(); //ejecutar la instruccion st
+            resultado = ps.executeUpdate() > 0;
 
-        } catch (Exception ex) {
-
-            ex.printStackTrace();//muestra el error
+        } catch (SQLException e) {
+            System.out.println("error actualizar producto: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return false;
+        return resultado;
     }
 
     @Override
     public Boolean eliminar(Object id) {
+        Boolean resultado = false;
 
-        try {//?=representa un parametro que se va arelacionar con el objeto p
-            String sql = "delete from productos where id=?";
-            //preparar una instruccion para ejecutar la cadena sql
-            ps = con.obtenerConexion().prepareStatement(sql);
+        final String query = "update productos set estado= 0 where id=?";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
             ps.setInt(1, Integer.parseInt(id.toString()));
-            ps.executeUpdate(); //ejecutar la instruccion st
-        } catch (Exception ex) {
-            ex.printStackTrace();//muestra el error
+            resultado = ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("error eliminar producto: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return false;
+        return resultado;
     }
 
     @Override
     public List<Productos> obtenerPorId(Integer id) {
         List<Productos> lis = new ArrayList<>();
 
-        try {
+    
 
-            String sql = "select  *from productos where id=?";
-            ps = con.obtenerConexion().prepareStatement(sql);
-            //ps.setInt(1, cod + "%");
+            final String query =  "select  *from productos where id=?";
+             try {
+            ps = con.obtenerConexion().prepareStatement(query);
+           
             ps.setInt(1, id);
-            //Los datos son llevados a la RAM
+         
             rs = ps.executeQuery();
-            //llenar el arraylist con la clase entidad
+           
             while (rs.next()) {
 
                 Productos u = new Productos();
@@ -104,9 +116,12 @@ public class ControlProductos implements IProductos {
 
                 lis.add(u);
 
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+         }
+       } catch (SQLException e) {
+            System.out.println("error obtenerPorId producto: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
         return lis;
     }
@@ -115,13 +130,13 @@ public class ControlProductos implements IProductos {
     public List<Productos> listar() {
         List<Productos> lis = new ArrayList<>();
 
-        try {
 
-            String sql = "select id,idcategoria,descripcion,estado from productos";
-            //? =equivale a un parametro
-            ps = con.obtenerConexion().prepareStatement(sql);
-            //st.setString(1,id);
-            //relacionar el ? con su variable
+
+     
+             final String query = "select * from productos where estado = 1;";
+              try {
+
+            ps = con.obtenerConexion().prepareStatement(query);
             rs = ps.executeQuery();
             //llenar el arraylist con la clase entidad
             while (rs.next()) {
@@ -132,15 +147,49 @@ public class ControlProductos implements IProductos {
                 u.setEstado(rs.getInt(4));
 
                 lis.add(u);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+           }
+        } catch (SQLException e) {
+            System.out.println("error listar producto: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
         return lis;
     }
+
 
     @Override
     public Productos obtenerPorId(Object id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public List<Productos> listarTodos() {
+              List<Productos> lis = new ArrayList<>();
+    
+               //
+             final String query = "select id,idcategoria,descripcion,estado from productos";
+               //final String query = "select *from categorias,productos where categorias.id = productos.idcategoria";
+        try {
+
+            ps = con.obtenerConexion().prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Productos u = new Productos();
+                u.setId(rs.getInt(1));
+                u.setIdcategoria(rs.getInt(2));
+                u.setDescripcion(rs.getString(3));
+                u.setEstado(rs.getInt(4));
+
+                lis.add(u);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar productos: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lis;
+    }
+
 }
