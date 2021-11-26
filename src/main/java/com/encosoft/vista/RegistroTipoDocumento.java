@@ -52,9 +52,6 @@ public class RegistroTipoDocumento extends javax.swing.JInternalFrame {
             if (Utilitario.validarCamposVacios(txtDescripcion)) {
                 return;
             }
-            if (Utilitario.validarCamposVacios(cboEstado)) {
-                return;
-            }
             TipoDocumento td = new TipoDocumento();
             td.setDescripcion(txtDescripcion.getText());
 
