@@ -131,8 +131,13 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
         boolean esPesoValido = false, esCantidadValida = false, esPrecioUnitValido = false, esDescripcionValida = false;
         while (!esPesoValido) {
             try {
-                peso = Integer.parseInt(JOptionPane.showInputDialog(null, "Ingrese el peso en Kg", productoSeleccionado, JOptionPane.INFORMATION_MESSAGE));
-                esPesoValido = true;
+                String _peso = JOptionPane.showInputDialog(null, "Ingrese el peso", productoSeleccionado, JOptionPane.INFORMATION_MESSAGE);
+                if (_peso == null) {
+                    break;
+                } else {
+                    peso = Integer.parseInt(_peso);
+                    esPesoValido = true;
+                }
             } catch (NumberFormatException e) {
                 esPesoValido = false;
                 JOptionPane.showMessageDialog(null, "El dato ingresado no es correcto", "Error formato", JOptionPane.WARNING_MESSAGE);
@@ -140,8 +145,13 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
         }
         while (!esCantidadValida) {
             try {
-                cantidad = Integer.parseInt(JOptionPane.showInputDialog(null, "Ingrese la cantidad", productoSeleccionado, JOptionPane.INFORMATION_MESSAGE));
-                esCantidadValida = true;
+                String _cantidad = JOptionPane.showInputDialog(null, "Ingrese la cantidad", productoSeleccionado, JOptionPane.INFORMATION_MESSAGE);
+                if (_cantidad == null) {
+                    break;
+                } else {
+                    cantidad = Integer.parseInt(_cantidad);
+                    esCantidadValida = true;
+                }
             } catch (NumberFormatException e) {
                 esCantidadValida = false;
                 JOptionPane.showMessageDialog(null, "El dato ingresado no es correcto", "Error formato", JOptionPane.WARNING_MESSAGE);
@@ -149,8 +159,13 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
         }
         while (!esPrecioUnitValido) {
             try {
-                precioUnitario = Double.parseDouble(JOptionPane.showInputDialog(null, "Ingrese el precio unitario", productoSeleccionado, JOptionPane.INFORMATION_MESSAGE));
-                esPrecioUnitValido = true;
+                String _precioUnitario = JOptionPane.showInputDialog(null, "Ingrese el precio unitario", productoSeleccionado, JOptionPane.INFORMATION_MESSAGE);
+                if (_precioUnitario == null) {
+                    break;
+                } else {
+                    precioUnitario = Double.parseDouble(_precioUnitario);
+                    esPrecioUnitValido = true;
+                }
             } catch (NumberFormatException e) {
                 esPrecioUnitValido = false;
                 JOptionPane.showMessageDialog(null, "El dato ingresado no es correcto", "Error formato", JOptionPane.WARNING_MESSAGE);
@@ -158,19 +173,65 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
         }
         while (!esDescripcionValida) {
             descripcion = JOptionPane.showInputDialog(null, "Ingrese alguna descripción", productoSeleccionado, JOptionPane.INFORMATION_MESSAGE);
+            if (descripcion == null) {
+                break;
+            }
             esDescripcionValida = descripcion.trim().length() > 0;
             if (!esDescripcionValida) {
                 JOptionPane.showMessageDialog(null, "Debe ingresar una descripción", "Error formato", JOptionPane.WARNING_MESSAGE);
             }
         }
+
+        if (!esPesoValido || !esCantidadValida || !esPrecioUnitValido || !esDescripcionValida) {
+            return;
+        }
+
         enviarDatosProductoAtablaDetalle(productoSeleccionado, peso, cantidad, precioUnitario, descripcion);
         guardarDetalleEncomienda();
     }
 
+    boolean existeProducto() {
+        int cantidadFilas = tblDetalleEncomienda.getRowCount();
+        if (cantidadFilas > 0) {
+            for (int i = 0; i < cantidadFilas; i++) {
+                int id = Integer.parseInt(tblDetalleEncomienda.getValueAt(i, 0).toString());
+                if (id == idProducto) return true;
+            }
+        }
+        return false;
+    }
+
+    void actualizarProductoExistente(String producto, int peso, int cantidad, double precioUnitario, String descripcion) {
+        for (int i = 0; i < tblDetalleEncomienda.getRowCount(); i++) {
+            int id = Integer.parseInt(tblDetalleEncomienda.getValueAt(i, 0).toString());
+            if (id == idProducto) {
+                int pesoAnterior = Integer.parseInt(tblDetalleEncomienda.getValueAt(i, 2).toString());
+                int pesoTotal = pesoAnterior + peso;
+                tblDetalleEncomienda.setValueAt(pesoTotal, i, 2);
+
+                int cantidadAnterior = Integer.parseInt(tblDetalleEncomienda.getValueAt(i, 3).toString());
+                int cantidadTotal = cantidadAnterior + cantidad;
+                tblDetalleEncomienda.setValueAt(cantidadTotal, i, 3);
+
+                double precioUnitarioAnterior = Double.parseDouble(tblDetalleEncomienda.getValueAt(i, 4).toString());
+                double precioUnitarioTotal = precioUnitarioAnterior + precioUnitario;
+                tblDetalleEncomienda.setValueAt(precioUnitarioTotal, i, 4);
+
+                double nuevoTotal = cantidadTotal * precioUnitarioTotal;
+                tblDetalleEncomienda.setValueAt(nuevoTotal, i, 5);
+            }
+        }
+        calcularPrecioTotal();
+    }
+
     void enviarDatosProductoAtablaDetalle(String producto, int peso, int cantidad, double precioUnitario, String descripcion) {
-        double total = cantidad * precioUnitario;
-        Object data[] = {idProducto, producto, peso, cantidad, precioUnitario, total, descripcion};
-        modeloDetalle.addRow(data);
+        if (existeProducto()) {
+            actualizarProductoExistente(producto, peso, cantidad, precioUnitario, descripcion);
+        } else {
+            double total = cantidad * precioUnitario;
+            Object data[] = {idProducto, producto, peso, cantidad, precioUnitario, total, descripcion};
+            modeloDetalle.addRow(data);
+        }
     }
 
     void calcularPrecioTotal() {
@@ -275,7 +336,6 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
 
             detalleEncomiendasLista.add(de);
         }
-        System.out.println("cantidad detalle: " + detalleEncomiendasLista.size());
     }
 
     void registrarEncomienda() {
