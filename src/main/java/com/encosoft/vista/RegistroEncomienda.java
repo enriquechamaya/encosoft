@@ -28,7 +28,7 @@ public class RegistroEncomienda extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtId = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jTextField3 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
@@ -83,8 +83,8 @@ public class RegistroEncomienda extends javax.swing.JInternalFrame {
         jLabel1.setText("ID:");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, -1, -1));
 
-        jTextField1.setEnabled(false);
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 20, 140, -1));
+        txtId.setEnabled(false);
+        getContentPane().add(txtId, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 20, 140, -1));
 
         jLabel3.setText("Cliente:");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, -1, -1));
@@ -146,8 +146,6 @@ public class RegistroEncomienda extends javax.swing.JInternalFrame {
 
         jLabel13.setText("Precio Unitario");
         getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 240, -1, -1));
-
-        jTextField10.setEnabled(false);
         getContentPane().add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 240, 80, -1));
 
         jLabel14.setText("Peso");
@@ -247,7 +245,6 @@ public class RegistroEncomienda extends javax.swing.JInternalFrame {
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField12;
     private javax.swing.JTextField jTextField13;
@@ -259,5 +256,6 @@ public class RegistroEncomienda extends javax.swing.JInternalFrame {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
+    private javax.swing.JTextField txtId;
     // End of variables declaration//GEN-END:variables
 }

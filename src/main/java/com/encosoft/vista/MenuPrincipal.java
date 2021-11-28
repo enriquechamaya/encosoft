@@ -255,7 +255,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuAddDocumentoTipoActionPerformed
 
     private void jMenuAddEncomiendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuAddEncomiendaActionPerformed
-       RegistroEncomienda internalFrame = new RegistroEncomienda();
+       RegistroEncomiendas internalFrame = new RegistroEncomiendas();
         jDesktopPane2.add(internalFrame);
         internalFrame.show();
         centrarFormulario(internalFrame);
@@ -316,7 +316,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JDesktopPane jDesktopPane2;
+    public static javax.swing.JDesktopPane jDesktopPane2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;

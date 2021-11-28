@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface IProductos extends ICrud<Productos>{
     List<Productos> obtenerPorId(Integer id);
+    List<Productos> listarPorDescripcion(String descripcion);
 }

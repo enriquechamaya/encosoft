@@ -143,4 +143,32 @@ public class ControlProductos implements IProductos {
     public Productos obtenerPorId(Object id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public List<Productos> listarPorDescripcion(String descripcion) {
+                List<Productos> lis = new ArrayList<>();
+
+        try {
+
+            String sql = "select id,descripcion from productos where descripcion like ? and estado = 1";
+            //? =equivale a un parametro
+            ps = con.obtenerConexion().prepareStatement(sql);
+            ps.setString(1, descripcion + "%");
+            //st.setString(1,id);
+            //relacionar el ? con su variable
+            rs = ps.executeQuery();
+            //llenar el arraylist con la clase entidad
+            while (rs.next()) {
+                Productos u = new Productos();
+                u.setId(rs.getInt(1));
+                u.setDescripcion(rs.getString(2));
+
+                lis.add(u);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return lis;
+    }
+
 }
