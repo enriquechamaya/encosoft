@@ -129,4 +129,28 @@ public class ControlAgencia extends ReusableValidacion implements IAgencia {
         }
         return lista;
     }
+
+    @Override
+    public List<Agencia> listarPorDescripcion(String descripcion) {
+        List<Agencia> lista = new ArrayList<>();
+        final String query = "select * from agencias where descripcion like ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setString(1, descripcion + "%");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Agencia agencia = new Agencia();
+                agencia.setId(rs.getInt(1));
+                agencia.setDescripcion(rs.getString(2));
+                agencia.setEstado(rs.getInt(3));
+                lista.add(agencia);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar agencias: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lista;
+    }
 }

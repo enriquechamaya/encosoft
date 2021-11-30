@@ -5,17 +5,136 @@
  */
 package com.encosoft.vista;
 
+import com.encosoft.controlador.ControlCategorias;
+import com.encosoft.modelo.Categoria;
+import com.encosoft.util.Utilitario;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Saul
  */
 public class RegistroCategorias extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form RegistroTipoDocumento
-     */
+    ControlCategorias controlCategorias = new ControlCategorias();
+    boolean esActualizar = false;
+
     public RegistroCategorias() {
         initComponents();
+        listarCategorias(controlCategorias.listar());
+        Utilitario.LlenarComboBoxEstado(cboEstado);
+        cambiarBotonGuardar();
+    }
+
+    void listarCategorias(List<Categoria> lista) {
+        DefaultTableModel modelo = new DefaultTableModel();
+        tblCategorias.setModel(modelo);
+
+        modelo.addColumn("ID");
+        modelo.addColumn("DESCRIPCION");
+        modelo.addColumn("ESTADO");
+
+        modelo.setRowCount(0);
+        for (Categoria td : lista) {
+            Object data[] = {td.getId(), td.getDescripcion(), (td.getEstado() == 1 ? "ACTIVO" : "INACTIVO")};
+            modelo.addRow(data);
+        }
+    }
+
+    void registrar() {
+        if (esActualizar) {
+            limpiar();
+        } else {
+            if (Utilitario.validarCamposVacios(txtDescripcion)) {
+                return;
+            }
+            Categoria td = new Categoria();
+            td.setDescripcion(txtDescripcion.getText());
+
+            boolean esExito = controlCategorias.insertar(td);
+            if (esExito) {
+                listarCategorias(controlCategorias.listar());
+                limpiar();
+                Utilitario.MensajeExitoGenerico();
+            } else {
+                Utilitario.MensajeErrorGenerico();
+            }
+        }
+    }
+
+    void obtenerCategoria() {
+        int fila = tblCategorias.getSelectedRow();
+        txtId.setText(tblCategorias.getValueAt(fila, 0).toString());
+        txtDescripcion.setText(tblCategorias.getValueAt(fila, 1).toString());
+        cboEstado.setSelectedItem(tblCategorias.getValueAt(fila, 2).toString());
+        esActualizar = true;
+        cambiarBotonGuardar();
+    }
+
+    void editar() {
+        int fila = tblCategorias.getSelectedRow();
+        if (fila >= 0) {
+            if (Utilitario.validarCamposVacios(txtDescripcion)) {
+                return;
+            }
+            if (Utilitario.validarCamposVacios(cboEstado)) {
+                return;
+            }
+            Categoria td = new Categoria();
+            td.setId(Integer.parseInt(txtId.getText()));
+            td.setDescripcion(txtDescripcion.getText());
+            td.setEstado(Utilitario.obtenerIdEstado(cboEstado));
+
+            boolean esExito = controlCategorias.actualizar(td);
+            if (esExito) {
+                listarCategorias(controlCategorias.listar());
+                limpiar();
+                Utilitario.MensajeActualizacionExitoGenerico();
+            } else {
+                Utilitario.MensajeErrorGenerico();
+            }
+        } else {
+            Utilitario.MensajeSeleccionarRegistro();
+        }
+    }
+
+    void cambiarBotonGuardar() {
+        if (esActualizar) {
+            btnGuardar.setText("Nuevo");
+            lblEstado.setVisible(true);
+            cboEstado.setVisible(true);
+        } else {
+            txtId.setText("AUTOGENERADO");
+            btnGuardar.setText("Guardar");
+            lblEstado.setVisible(false);
+            cboEstado.setVisible(false);
+        }
+    }
+
+    void eliminar() {
+        int fila = tblCategorias.getSelectedRow();
+        if (fila >= 0) {
+            int id = Integer.parseInt(tblCategorias.getValueAt(fila, 0).toString());
+            boolean esExito = controlCategorias.eliminar(id);
+            if (esExito) {
+                listarCategorias(controlCategorias.listar());
+                limpiar();
+                Utilitario.MensajeEliminacionExitoGenerico();
+            } else {
+                Utilitario.MensajeErrorGenerico();
+            }
+        } else {
+            Utilitario.MensajeSeleccionarRegistro();
+        }
+    }
+
+    void limpiar() {
+        Utilitario.limpiarTextbox(txtDescripcion, txtBusqueda);
+        Utilitario.limpiarCombobox(cboEstado);
+        tblCategorias.clearSelection();
+        esActualizar = false;
+        cambiarBotonGuardar();
     }
 
     /**
@@ -28,23 +147,24 @@ public class RegistroCategorias extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jComboBox3 = new javax.swing.JComboBox<>();
+        lblEstado = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
+        txtDescripcion = new javax.swing.JTextField();
+        cboEstado = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnGuardar = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
-        jButton4 = new javax.swing.JButton();
+        btnBusqueda = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
-        jTextField10 = new javax.swing.JTextField();
+        txtBusqueda = new javax.swing.JTextField();
         jSeparator3 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblCategorias = new javax.swing.JTable();
         jSeparator4 = new javax.swing.JSeparator();
+        btnListarTodo = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -56,83 +176,143 @@ public class RegistroCategorias extends javax.swing.JInternalFrame {
         jLabel1.setText("ID:");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(39, 27, -1, -1));
 
-        jLabel2.setText("Estado");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
+        lblEstado.setText("Estado");
+        getContentPane().add(lblEstado, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
 
-        jTextField2.setEnabled(false);
-        getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 100, -1));
-        getContentPane().add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 100, -1));
+        txtId.setEnabled(false);
+        getContentPane().add(txtId, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 150, -1));
+        getContentPane().add(txtDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 150, -1));
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione:", "Activo", "Inactivo" }));
-        getContentPane().add(jComboBox3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 90, 100, -1));
+        getContentPane().add(cboEstado, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 90, 150, -1));
 
         jLabel3.setText("Decripcion:");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, -1, -1));
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/guardar.png"))); // NOI18N
-        jButton1.setText("Guardar");
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 150, 110, -1));
+        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/guardar.png"))); // NOI18N
+        btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 150, 110, -1));
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/editar.png"))); // NOI18N
-        jButton2.setText("Editar");
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, 110, -1));
+        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/editar.png"))); // NOI18N
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, 110, -1));
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/elimina.png"))); // NOI18N
-        jButton3.setText("Elimina");
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 150, 110, -1));
+        btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/elimina.png"))); // NOI18N
+        btnEliminar.setText("Elimina");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 150, 110, -1));
         getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 590, 20));
         getContentPane().add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 570, 20));
 
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa.png"))); // NOI18N
-        jButton4.setText("Mostrar Categorias");
-        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 220, -1, -1));
+        btnBusqueda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa.png"))); // NOI18N
+        btnBusqueda.setText("Mostrar Categorias");
+        btnBusqueda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBusquedaActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnBusqueda, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 220, -1, -1));
 
         jLabel11.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
         jLabel11.setText("Busca:");
         getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, -1, -1));
-        getContentPane().add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 90, -1));
+        getContentPane().add(txtBusqueda, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 90, -1));
         getContentPane().add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 200, 570, 20));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblCategorias.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "ID", "Descripcion", "Estado"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        tblCategorias.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblCategoriasMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblCategorias);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 520, 130));
         getContentPane().add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 570, 20));
 
+        btnListarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa.png"))); // NOI18N
+        btnListarTodo.setText("Listar todo");
+        btnListarTodo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListarTodoActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnListarTodo, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 210, -1, -1));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnListarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarTodoActionPerformed
+        listarCategorias(controlCategorias.listar());
+    }//GEN-LAST:event_btnListarTodoActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        registrar();
+
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        editar();
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        eliminar();
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void tblCategoriasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCategoriasMouseClicked
+
+        obtenerCategoria();
+    }//GEN-LAST:event_tblCategoriasMouseClicked
+
+    private void btnBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBusquedaActionPerformed
+        if (!txtBusqueda.getText().isEmpty()) {
+            listarCategorias(controlCategorias.listarPorDescripcion(txtBusqueda.getText().trim()));
+        } else {
+            Utilitario.MensajeCampoVacio("busqueda");
+        }
+
+    }//GEN-LAST:event_btnBusquedaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox<String> jComboBox3;
+    private javax.swing.JButton btnBusqueda;
+    private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnListarTodo;
+    private javax.swing.JComboBox<String> cboEstado;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField10;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JLabel lblEstado;
+    private javax.swing.JTable tblCategorias;
+    private javax.swing.JTextField txtBusqueda;
+    private javax.swing.JTextField txtDescripcion;
+    private javax.swing.JTextField txtId;
     // End of variables declaration//GEN-END:variables
 }

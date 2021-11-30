@@ -130,4 +130,28 @@ public class ControlCategorias extends ReusableValidacion implements ICategoria 
         return categoria;
     }
 
+    @Override
+    public List<Categoria> listarPorDescripcion(String descripcion) {
+     List<Categoria> lista = new ArrayList<>();
+        final String query = "select * from categorias where descripcion like ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setString(1, descripcion + "%");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Categoria categoria = new Categoria();
+                categoria.setId(rs.getInt(1));
+                categoria.setDescripcion(rs.getString(2));
+                categoria.setEstado(rs.getInt(3));
+                lista.add(categoria);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar categoria: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lista;
+    }
+
 }

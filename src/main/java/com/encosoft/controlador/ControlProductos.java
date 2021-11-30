@@ -8,13 +8,16 @@ package com.encosoft.controlador;
 import com.encosoft.conexion.Conexion;
 import com.encosoft.interfaces.IProductos;
 import com.encosoft.modelo.Productos;
+import com.encosoft.util.Constantes;
+import com.encosoft.util.ReusableValidacion;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
 
-public class ControlProductos implements IProductos {
+
+public class ControlProductos extends ReusableValidacion implements IProductos {
 
     private static PreparedStatement ps;
     private static ResultSet rs;
@@ -26,121 +29,131 @@ public class ControlProductos implements IProductos {
 
     @Override
     public Boolean insertar(Productos t) {
+        Boolean resultado = false;
 
-        try {//?=representa un parametro que se va arelacionar con el objeto p
-
-            String sql = "INSERT INTO productos (idcategoria,descripcion,estado) VALUES (?,?,?)";
-            //preparar una instruccion para ejecutar la cadena sql
-            ps = con.obtenerConexion().prepareStatement(sql);
-            ps.setInt(1, t.getIdcategoria());
-            ps.setString(2, t.getDescripcion());
-            ps.setInt(3, t.getEstado());
-
-            ps.executeUpdate(); //ejecutar la instruccion st
-            JOptionPane.showMessageDialog(null, "Registro Guardado con Exito");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "ERROR");
-            ex.printStackTrace();//muestra el error
+        final String query = "INSERT INTO productos  VALUES (?,?,?,?);";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setInt(1, t.getId());
+            ps.setInt(2, t.getIdcategoria());
+            ps.setString(3, t.getDescripcion());
+            ps.setInt(4, Constantes.ESTADO_ACTIVO);
+            resultado = ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("error insertar productos: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return false;
+        return resultado;
     }
 
     @Override
     public Boolean actualizar(Productos t) {
-
-        try {//?=representa un parametro que se va arelacionar con el objeto p
-            String sql = "update productos set idcategoria=?,descripcion=?,estado=? where id=?";
-            //preparar una instruccion para ejecutar la cadena sql
-            ps = con.obtenerConexion().prepareStatement(sql);
+        Boolean resultado = false;
+        final String query = "update productos set idcategoria = ?,descripcion = ?, estado = ? where id = ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
             ps.setInt(1, t.getIdcategoria());
             ps.setString(2, t.getDescripcion());
-            ps.setInt(3, t.getEstado());
+              ps.setInt(3, t.getEstado());
             ps.setInt(4, t.getId());
-
-            ps.executeUpdate(); //ejecutar la instruccion st
-
-        } catch (Exception ex) {
-
-            ex.printStackTrace();//muestra el error
+            resultado = ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("error actualizar productos: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return false;
+        return resultado;
     }
 
     @Override
     public Boolean eliminar(Object id) {
-
-        try {//?=representa un parametro que se va arelacionar con el objeto p
-            String sql = "delete from productos where id=?";
-            //preparar una instruccion para ejecutar la cadena sql
-            ps = con.obtenerConexion().prepareStatement(sql);
-            ps.setInt(1, Integer.parseInt(id.toString()));
-            ps.executeUpdate(); //ejecutar la instruccion st
-        } catch (Exception ex) {
-            ex.printStackTrace();//muestra el error
-        }
-        return false;
-    }
-
-    @Override
-    public List<Productos> obtenerPorId(Integer id) {
-        List<Productos> lis = new ArrayList<>();
-
+        Boolean resultado = false;
+        final String query = "update productos set estado = 0 where id = ?;";
         try {
-
-            String sql = "select  *from productos where id=?";
-            ps = con.obtenerConexion().prepareStatement(sql);
-            //ps.setInt(1, cod + "%");
-            ps.setInt(1, id);
-            //Los datos son llevados a la RAM
-            rs = ps.executeQuery();
-            //llenar el arraylist con la clase entidad
-            while (rs.next()) {
-
-                Productos u = new Productos();
-                u.setId(rs.getInt(1));
-                u.setIdcategoria(rs.getInt(2));
-                u.setDescripcion(rs.getString(3));
-                u.setEstado(rs.getInt(4));
-
-                lis.add(u);
-
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(id.toString()));
+            resultado = ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("error eliminar productos: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return lis;
+        return resultado;
     }
 
     @Override
     public List<Productos> listar() {
-        List<Productos> lis = new ArrayList<>();
-
+        List<Productos> lista = new ArrayList<>();
+        final String query = "select * from productos;";
         try {
-
-            String sql = "select id,idcategoria,descripcion,estado from productos";
-            //? =equivale a un parametro
-            ps = con.obtenerConexion().prepareStatement(sql);
-            //st.setString(1,id);
-            //relacionar el ? con su variable
+            ps = con.obtenerConexion().prepareStatement(query);
             rs = ps.executeQuery();
-            //llenar el arraylist con la clase entidad
             while (rs.next()) {
-                Productos u = new Productos();
-                u.setId(rs.getInt(1));
-                u.setIdcategoria(rs.getInt(2));
-                u.setDescripcion(rs.getString(3));
-                u.setEstado(rs.getInt(4));
-
-                lis.add(u);
+                Productos productos = new Productos();
+                productos.setId(rs.getInt(1));
+                productos.setIdcategoria(rs.getInt(2));
+                productos.setDescripcion(rs.getString(3));
+                productos.setEstado(rs.getInt(4));
+                lista.add(productos);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("error listar productos: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
         }
-        return lis;
+        return lista;
     }
 
     @Override
     public Productos obtenerPorId(Object id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Productos productos = new Productos();
+        final String query = "select * from productos where id = ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(id.toString()));
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                productos.setId(rs.getInt(1));
+                productos.setIdcategoria(rs.getInt(2));
+                productos.setDescripcion(rs.getString(3));
+                productos.setEstado(rs.getInt(4));
+            }
+        } catch (SQLException e) {
+            System.out.println("error obtenerPorId productos: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return productos;
+    }
+
+    @Override
+    public List<Productos> listarPorDescripcion(String descripcion) {
+        List<Productos> lista = new ArrayList<>();
+        final String query = "select * from productos where descripcion like ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setString(1, descripcion + "%");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Productos productos = new Productos();
+                productos.setId(rs.getInt(1));
+                productos.setIdcategoria(rs.getInt(2));
+                productos.setDescripcion(rs.getString(3));
+                productos.setEstado(rs.getInt(4));
+                lista.add(productos);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar producto: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lista;
     }
 }
