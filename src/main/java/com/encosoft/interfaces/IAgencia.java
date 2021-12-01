@@ -6,6 +6,7 @@
 package com.encosoft.interfaces;
 
 import com.encosoft.modelo.Agencia;
+import java.util.List;
 
 /**
  *
@@ -13,4 +14,5 @@ import com.encosoft.modelo.Agencia;
  */
 public interface IAgencia extends ICrud<Agencia> {
     
+      List<Agencia> listarPorDescripcion(String descripcion);
 }
