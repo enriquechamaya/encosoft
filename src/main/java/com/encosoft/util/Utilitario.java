@@ -1,9 +1,11 @@
 package com.encosoft.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -45,6 +47,11 @@ public class Utilitario {
 
     public static void MensajeCamposVacios() {
         JOptionPane.showMessageDialog(null, String.format(Constantes.MENSAJE_CAMPOS_VACIOS),
+                Constantes.TITULO_MENSAJE, Constantes.ESTILO_MENSAJE_ADVERTENCIA);
+    }
+
+    public static void MostrarMensajeAdvertencia(String mensaje) {
+        JOptionPane.showMessageDialog(null, mensaje,
                 Constantes.TITULO_MENSAJE, Constantes.ESTILO_MENSAJE_ADVERTENCIA);
     }
 
@@ -103,6 +110,12 @@ public class Utilitario {
         return false;
     }
 
+    public static void limpiarLabels(JLabel... labelList) {
+        for (JLabel label : labelList) {
+            label.setText("");
+        }
+    }
+
     public static void limpiarTextbox(JTextField... textboxList) {
         for (JTextField texto : textboxList) {
             texto.setText("");
@@ -113,15 +126,6 @@ public class Utilitario {
         for (JComboBox combo : combos) {
             combo.setSelectedIndex(0);
         }
-    }
-
-    public static int obtenerIdDesdeCombobox(Map<Integer, String> lista, JComboBox combo) {
-        for (Map.Entry<Integer, String> obj : lista.entrySet()) {
-            if (combo.getSelectedItem().equals(obj.getValue())) {
-                return obj.getKey();
-            }
-        }
-        return -1;
     }
 
     public static int obtenerIdComboBox(Map<Integer, String> map, JComboBox combo) {
@@ -156,5 +160,36 @@ public class Utilitario {
             table.getColumnModel().getColumn(indicesColumna).setMinWidth(0);
             table.getColumnModel().getColumn(indicesColumna).setMaxWidth(0);
         }
+    }
+
+    public static String obtenerFechaDesdeDate(Date fechaDate) {
+        String patron = "yyyy-MM-dd hh:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(patron);
+        String date = sdf.format(fechaDate);
+        return date;
+    }
+
+    public static String obtenerFechaActualMili() {
+        return String.valueOf(new Date().getTime());
+    }
+
+    public static String obtenerRutaReporte(String nombreArchivo) {
+        return concatenar(Constantes.HOME_USER,
+                Constantes.SLASH,
+                Constantes.CARPETA_POR_DEFECTO,
+                Constantes.SLASH,
+                nombreArchivo,
+                Constantes.GUION_BAJO,
+                obtenerFechaActualMili(),
+                Constantes.EXTENSION_REPORTE);
+    }
+
+    public static String obtenerEstadoActivoInactivo(int estado) {
+        return estado == 1 ? "ACTIVO" : "INACTIVO";
+    }
+
+    public static void MensajeExitoReporteExportado() {
+        JOptionPane.showMessageDialog(null, Constantes.MENSAJE_REPORTE_EXPORTADO_EXITOSO,
+                Constantes.TITULO_MENSAJE, Constantes.ESTILO_MENSAJE_EXITO);
     }
 }

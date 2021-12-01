@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ControlProductos extends ReusableValidacion implements IProductos {
 
     private static PreparedStatement ps;
@@ -56,7 +55,7 @@ public class ControlProductos extends ReusableValidacion implements IProductos {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setInt(1, t.getIdcategoria());
             ps.setString(2, t.getDescripcion());
-              ps.setInt(3, t.getEstado());
+            ps.setInt(3, t.getEstado());
             ps.setInt(4, t.getId());
             resultado = ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -156,4 +155,5 @@ public class ControlProductos extends ReusableValidacion implements IProductos {
         }
         return lista;
     }
+
 }

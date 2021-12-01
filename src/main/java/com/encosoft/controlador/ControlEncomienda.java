@@ -1,7 +1,9 @@
 package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
+import com.encosoft.config.ConfigMail;
 import com.encosoft.interfaces.IEncomienda;
+import com.encosoft.modelo.Cliente;
 import com.encosoft.modelo.DetalleEncomienda;
 import com.encosoft.modelo.Encomienda;
 import com.encosoft.util.Constantes;
@@ -46,12 +48,19 @@ public class ControlEncomienda extends ReusableValidacion implements IEncomienda
             resultado = ps.executeUpdate() > 0;
             if (resultado) {
                 Integer idEncomienda = obtenerUltimoID(ps, rs);
+                t.setId(idEncomienda);
                 ControlDetalleEncomienda controlDetalleEncomienda = new ControlDetalleEncomienda();
                 List<DetalleEncomienda> detalleEncomiendas = t.getDetalleEncomiendas();
                 for (DetalleEncomienda detalleEncomienda : detalleEncomiendas) {
                     detalleEncomienda.setIdencomienda(idEncomienda);
                     controlDetalleEncomienda.insertar(detalleEncomienda);
                 }
+
+                // enviar correo
+                ControlClientes controlClientes = new ControlClientes();
+                Cliente c = controlClientes.obtenerPorId(t.getIdcliente());
+                ConfigMail configMail = new ConfigMail();
+                configMail.enviarCorreoRegistroEncomienda(c.getEmail(), t);
             }
         } catch (SQLException e) {
             System.out.println("error insertar encomienda: " + e.getMessage());
