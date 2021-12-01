@@ -5,10 +5,12 @@
  */
 package com.encosoft.vista;
 
+import com.encosoft.controlador.ControlAgencia;
 import com.encosoft.controlador.ControlClientes;
 import com.encosoft.controlador.ControlEncomienda;
 import com.encosoft.controlador.ControlProductos;
 import com.encosoft.controlador.ControlTipoDocumento;
+import com.encosoft.modelo.Agencia;
 import com.encosoft.modelo.Cliente;
 import com.encosoft.modelo.DetalleEncomienda;
 import com.encosoft.modelo.Encomienda;
@@ -37,6 +39,7 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
     int idCliente, idProducto;
     DefaultTableModel modeloDetalle = new DefaultTableModel();
     Map<Integer, String> tipoDocumentoMap = new HashMap<>();
+    Map<Integer, String> agenciaMap = new HashMap<>();
     List<DetalleEncomienda> detalleEncomiendasLista = new ArrayList<>();
 
     boolean tieneClienteSeleccionado = false, tieneProductoSeleccionado = false;
@@ -46,6 +49,7 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
      */
     public RegistroEncomiendas() {
         initComponents();
+        listarAgencias();
         listarTipoDocumento();
         listarClientes();
         listarProductos();
@@ -195,7 +199,9 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
         if (cantidadFilas > 0) {
             for (int i = 0; i < cantidadFilas; i++) {
                 int id = Integer.parseInt(tblDetalleEncomienda.getValueAt(i, 0).toString());
-                if (id == idProducto) return true;
+                if (id == idProducto) {
+                    return true;
+                }
             }
         }
         return false;
@@ -276,6 +282,16 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
         dialog.setVisible(true);
     }
 
+    void listarAgencias() {
+        ControlAgencia controlAgencia = new ControlAgencia();
+        List<Agencia> lista = controlAgencia.listar();
+        cboAgencia.addItem("SELECCIONAR");
+        for (Agencia agencia : lista) {
+            agenciaMap.put(agencia.getId(), agencia.getDescripcion());
+            cboAgencia.addItem(agencia.getDescripcion());
+        }
+    }
+
     void listarTipoDocumento() {
         ControlTipoDocumento controlTipoDocumento = new ControlTipoDocumento();
         List<TipoDocumento> lista = controlTipoDocumento.listar();
@@ -344,7 +360,7 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
         }
 
         Encomienda encomienda = new Encomienda();
-        encomienda.setIdagencia(1);
+        encomienda.setIdagencia(Utilitario.obtenerIdComboBox(agenciaMap, cboAgencia));
         encomienda.setIdtipodocumento(Utilitario.obtenerIdComboBox(tipoDocumentoMap, cboTipoDocumento));
         encomienda.setNumerodocumento(txtNroDocumento.getText());
         encomienda.setReceptorapepat(txtApellidoPat.getText());
@@ -618,8 +634,6 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Información del receptor", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
 
         jLabel8.setText("Agencia:");
-
-        cboAgencia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AGENCIA A" }));
 
         jLabel9.setText("Tipo documento:");
 
