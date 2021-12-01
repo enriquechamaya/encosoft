@@ -169,12 +169,18 @@ public class Utilitario {
         return date;
     }
 
+    public static String obtenerFechaActualMili() {
+        return String.valueOf(new Date().getTime());
+    }
+
     public static String obtenerRutaReporte(String nombreArchivo) {
         return concatenar(Constantes.HOME_USER,
                 Constantes.SLASH,
                 Constantes.CARPETA_POR_DEFECTO,
                 Constantes.SLASH,
                 nombreArchivo,
+                Constantes.GUION_BAJO,
+                obtenerFechaActualMili(),
                 Constantes.EXTENSION_REPORTE);
     }
 

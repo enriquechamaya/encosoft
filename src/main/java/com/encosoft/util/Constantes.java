@@ -30,6 +30,7 @@ public class Constantes {
     // configuracion reporte
     public static final String HOME_USER = System.getProperty("user.home");
     public static final String SLASH = "/";
+    public static final String GUION_BAJO = "_";
     public static final String CARPETA_POR_DEFECTO = "Downloads";
     public static final String EXTENSION_REPORTE = ".pdf";
 
@@ -48,5 +49,7 @@ public class Constantes {
     public static final String TITULO_REPORTE_CATEGORIAS = "CATEGORIAS";
     public static final String REPORTE_ROLES = "reporteRoles";
     public static final String TITULO_REPORTE_ROLES = "ROLES";
+    public static final String REPORTE_TIPO_DOCUMENTOS = "reporteTipoDocumentos";
+    public static final String TITULO_REPORTE_TIPO_DOCUMENTOS = "TIPO DE DOCUMENTOS";
 
 }
