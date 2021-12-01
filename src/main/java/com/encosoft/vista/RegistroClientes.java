@@ -80,7 +80,7 @@ public class RegistroClientes extends javax.swing.JInternalFrame {
         }
 
         Utilitario.ocultarColumnas(tblClientes,
-                1, 2, 3, 4, 5, 6);
+            1, 2, 3, 4, 5, 6);
     }
 
     void guardar() {
