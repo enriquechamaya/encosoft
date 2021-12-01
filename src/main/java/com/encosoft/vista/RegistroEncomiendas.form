@@ -230,6 +230,7 @@
     </Container>
   </NonVisualComponents>
   <Properties>
+    <Property name="closable" type="boolean" value="true"/>
     <Property name="title" type="java.lang.String" value="REGISTRO DE ENCOMIENDAS"/>
   </Properties>
   <SyntheticProperties>

@@ -168,4 +168,22 @@ public class Utilitario {
         String date = sdf.format(fechaDate);
         return date;
     }
+
+    public static String obtenerRutaReporte(String nombreArchivo) {
+        return concatenar(Constantes.HOME_USER,
+                Constantes.SLASH,
+                Constantes.CARPETA_POR_DEFECTO,
+                Constantes.SLASH,
+                nombreArchivo,
+                Constantes.EXTENSION_REPORTE);
+    }
+
+    public static String obtenerEstadoActivoInactivo(int estado) {
+        return estado == 1 ? "ACTIVO" : "INACTIVO";
+    }
+
+    public static void MensajeExitoReporteExportado() {
+        JOptionPane.showMessageDialog(null, Constantes.MENSAJE_REPORTE_EXPORTADO_EXITOSO,
+                Constantes.TITULO_MENSAJE, Constantes.ESTILO_MENSAJE_EXITO);
+    }
 }

@@ -588,6 +588,7 @@ public final class RegistroEncomiendas extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        setClosable(true);
         setTitle("REGISTRO DE ENCOMIENDAS");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Información cliente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
