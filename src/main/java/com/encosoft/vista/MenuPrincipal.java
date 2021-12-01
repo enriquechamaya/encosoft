@@ -58,6 +58,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jMenuAddRol = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuAddEncomienda = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
@@ -182,6 +183,15 @@ public class MenuPrincipal extends javax.swing.JFrame {
             }
         });
         jMenu3.add(jMenuAddEncomienda);
+
+        jMenuItem7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/listado-encomienda.png"))); // NOI18N
+        jMenuItem7.setText("Listado de encomienda");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem7);
 
         jMenuBar1.add(jMenu3);
 
@@ -435,6 +445,13 @@ public class MenuPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        ListarEncomiendas internalFrame = new ListarEncomiendas();
+        jDesktopPane2.add(internalFrame);
+        internalFrame.show();
+        centrarFormulario(internalFrame);
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -494,6 +511,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem9;
     // End of variables declaration//GEN-END:variables
 }

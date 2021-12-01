@@ -2,6 +2,7 @@ package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
 import com.encosoft.config.ConfigMail;
+import com.encosoft.dtos.ListarEncomiendasDTO;
 import com.encosoft.interfaces.IEncomienda;
 import com.encosoft.modelo.Cliente;
 import com.encosoft.modelo.DetalleEncomienda;
@@ -174,6 +175,40 @@ public class ControlEncomienda extends ReusableValidacion implements IEncomienda
             cerrarConexiones(rs, ps, con);
         }
         return encomienda;
+    }
+
+    @Override
+    public List<ListarEncomiendasDTO> listarEncomiendasPersonalizado(String idAgencia, String fechaInicio, String fechaFin, String cliente, String receptor) {
+        List<ListarEncomiendasDTO> lista = new ArrayList<>();
+        final String query = "SELECT e.id, a.`descripcion` agencia, CONCAT(c.`apepat`, ' ', c.`apemat`, ' ', c.`nombre`) cliente, "
+                + "CONCAT(e.`receptorapepat`, ' ', e.`receptorapemat`, ' ', e.`receptornombre`) receptor, "
+                + "date_format(e.`fecha`, '%d/%m/%Y %H:%m:%s') fecha, "
+                + "e.`preciototal`, IF(e.`estado` = 1, 'ACTIVO', 'INACTIVO') estado "
+                + "FROM encomienda e "
+                + "INNER JOIN agencias a ON e.`idagencia` = a.`id` "
+                + "INNER JOIN clientes c ON e.`idcliente` = c.`id`; ";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                ListarEncomiendasDTO encomienda = new ListarEncomiendasDTO();
+                encomienda.setId(rs.getInt(1));
+                encomienda.setAgencia(rs.getString(2));
+                encomienda.setCliente(rs.getString(3));
+                encomienda.setReceptor(rs.getString(4));
+                encomienda.setFecha(rs.getString(5));
+                encomienda.setPrecio(rs.getString(6));
+                encomienda.setEstado(rs.getString(7));
+                lista.add(encomienda);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar encomienda: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lista;
     }
 
 }

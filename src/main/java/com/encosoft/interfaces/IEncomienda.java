@@ -5,6 +5,7 @@
  */
 package com.encosoft.interfaces;
 
+import com.encosoft.dtos.ListarEncomiendasDTO;
 import com.encosoft.modelo.Encomienda;
 import java.util.List;
 
@@ -14,5 +15,5 @@ import java.util.List;
  */
 public interface IEncomienda extends ICrud<Encomienda>{
       
- 
+    List<ListarEncomiendasDTO> listarEncomiendasPersonalizado(String idAgencia, String fechaInicio, String fechaFin, String cliente, String receptor);
 }

@@ -1,6 +1,7 @@
 package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
+import com.encosoft.dtos.ListarDetalleEncomiendasDTO;
 import com.encosoft.interfaces.IDetalleEncomienda;
 import com.encosoft.modelo.DetalleEncomienda;
 import com.encosoft.util.Constantes;
@@ -142,6 +143,39 @@ public class ControlDetalleEncomienda extends ReusableValidacion implements IDet
             cerrarConexiones(rs, ps, con);
         }
         return detalleEncomienda;
+    }
+
+    @Override
+    public List<ListarDetalleEncomiendasDTO> listarDetalleEncomiendaPersonalizado(int idEncomienda) {
+        List<ListarDetalleEncomiendasDTO> lista = new ArrayList<>();
+        final String query = "SELECT c.`descripcion` categoria, p.`descripcion` producto, "
+                + "de.`peso`, de.`cantidad`, de.`preciounitario`, "
+                + "de.`cantidad` * de.preciounitario total "
+                + "FROM detalle_encomienda de "
+                + "INNER JOIN productos p ON de.`idproducto` = p.`id` "
+                + "INNER JOIN categorias c ON p.`idcategoria` = c.`id` "
+                + "WHERE de.`idencomienda` = ?;";
+        try {
+            ps = con.obtenerConexion().prepareStatement(query);
+            ps.setInt(1, idEncomienda);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                ListarDetalleEncomiendasDTO detalleEncomienda = new ListarDetalleEncomiendasDTO();
+                detalleEncomienda.setCategoria(rs.getString(1));
+                detalleEncomienda.setProducto(rs.getString(2));
+                detalleEncomienda.setPeso(rs.getString(3));
+                detalleEncomienda.setCantidad(rs.getString(4));
+                detalleEncomienda.setPrecioUnitario(rs.getString(5));
+                detalleEncomienda.setTotal(rs.getString(6));
+                lista.add(detalleEncomienda);
+            }
+        } catch (SQLException e) {
+            System.out.println("error listar detalleEncomienda: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarConexiones(rs, ps, con);
+        }
+        return lista;
     }
 
 }
