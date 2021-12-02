@@ -8,13 +8,20 @@ package com.encosoft.vista;
 import com.encosoft.controlador.ControlAgencia;
 import com.encosoft.controlador.ControlDetalleEncomienda;
 import com.encosoft.controlador.ControlEncomienda;
+import com.encosoft.controlador.ControlReportes;
 import com.encosoft.dtos.ListarDetalleEncomiendasDTO;
 import com.encosoft.dtos.ListarEncomiendasDTO;
 import com.encosoft.modelo.Agencia;
+import com.encosoft.util.Constantes;
 import com.encosoft.util.Utilitario;
+import com.itextpdf.text.DocumentException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -55,7 +62,7 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
         modelo.addColumn("ESTADO");
 
         modelo.setRowCount(0);
-        List<ListarEncomiendasDTO> lista = controlEncomienda.listarEncomiendasPersonalizado(cliente, receptor);
+        List<ListarEncomiendasDTO> lista = controlEncomienda.listarEncomiendasPersonalizado(cliente, receptor, "");
         for (ListarEncomiendasDTO e : lista) {
             Object data[] = {e.getId(), e.getAgencia(), e.getCliente(), e.getReceptor(), e.getFecha(), e.getPrecio(), e.getEstado()};
             modelo.addRow(data);
@@ -111,6 +118,7 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
         txtReceptor = new javax.swing.JTextField();
         btnBuscarEncomienda = new javax.swing.JButton();
         btnListarTodo = new javax.swing.JButton();
+        btnDescargarEncomienda = new javax.swing.JButton();
 
         setClosable(true);
         setTitle("LISTADO DE ENCOMIENDAS");
@@ -187,6 +195,7 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
 
         jLabel6.setText("RECEPTOR:");
 
+        btnBuscarEncomienda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa-pequena.png"))); // NOI18N
         btnBuscarEncomienda.setText("BUSCAR ENCOMIENDA");
         btnBuscarEncomienda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -194,10 +203,19 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
             }
         });
 
+        btnListarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa-pequena.png"))); // NOI18N
         btnListarTodo.setText("LISTAR TODO");
         btnListarTodo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnListarTodoActionPerformed(evt);
+            }
+        });
+
+        btnDescargarEncomienda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/descargar-encomienda.png"))); // NOI18N
+        btnDescargarEncomienda.setText("DESCARGAR ENCOMIENDA");
+        btnDescargarEncomienda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDescargarEncomiendaActionPerformed(evt);
             }
         });
 
@@ -209,9 +227,9 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
             .addComponent(jScrollPane1)
             .addComponent(pnlDetalle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -220,9 +238,10 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
                             .addComponent(txtReceptor)
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(317, 317, 317)
-                        .addComponent(btnBuscarEncomienda)
+                        .addComponent(btnDescargarEncomienda)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnBuscarEncomienda)
+                        .addGap(18, 18, 18)
                         .addComponent(btnListarTodo)))
                 .addContainerGap())
         );
@@ -241,9 +260,11 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtReceptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnBuscarEncomienda)
-                    .addComponent(btnListarTodo))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnBuscarEncomienda)
+                        .addComponent(btnListarTodo))
+                    .addComponent(btnDescargarEncomienda))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -264,21 +285,43 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tblEncomiendasMouseClicked
 
     private void btnBuscarEncomiendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarEncomiendaActionPerformed
-        if (!txtCliente.getText().trim().isEmpty()) cliente = txtCliente.getText();
-        if (!txtReceptor.getText().trim().isEmpty()) receptor = txtReceptor.getText();
-        listarEncomienda();
-        ((DefaultTableModel)tblDetalle.getModel()).setRowCount(0);
+        if (!txtCliente.getText().trim().isEmpty() || !txtReceptor.getText().trim().isEmpty()) {
+            cliente = txtCliente.getText();
+            receptor = txtReceptor.getText();
+            listarEncomienda();
+            ((DefaultTableModel) tblDetalle.getModel()).setRowCount(0);
+        }
     }//GEN-LAST:event_btnBuscarEncomiendaActionPerformed
 
     private void btnListarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarTodoActionPerformed
-        cliente = ""; receptor = "";
+        Utilitario.limpiarTextbox(txtCliente, txtReceptor);
+        cliente = "";
+        receptor = "";
         listarEncomienda();
-        ((DefaultTableModel)tblDetalle.getModel()).setRowCount(0);
+        ((DefaultTableModel) tblDetalle.getModel()).setRowCount(0);
     }//GEN-LAST:event_btnListarTodoActionPerformed
+
+    private void btnDescargarEncomiendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDescargarEncomiendaActionPerformed
+        int filaSeleccionada = tblEncomiendas.getSelectedRow();
+        if (filaSeleccionada >= 0) {
+            int idEncomienda = Integer.parseInt(tblEncomiendas.getValueAt(filaSeleccionada, 0).toString());
+            ControlReportes controlReportes = new ControlReportes();
+            try {
+                controlReportes.descargarEncomienda(idEncomienda);
+                JOptionPane.showMessageDialog(null, "Descarga exitosa", Constantes.TITULO_MENSAJE, JOptionPane.INFORMATION_MESSAGE);
+                tblEncomiendas.clearSelection();
+            } catch (DocumentException | IOException ex) {
+                Logger.getLogger(ListarEncomiendas.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            Utilitario.MensajeSeleccionarRegistro();
+        }
+    }//GEN-LAST:event_btnDescargarEncomiendaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscarEncomienda;
+    private javax.swing.JButton btnDescargarEncomienda;
     private javax.swing.JButton btnListarTodo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel5;

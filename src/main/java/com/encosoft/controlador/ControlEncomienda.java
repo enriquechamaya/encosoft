@@ -2,6 +2,7 @@ package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
 import com.encosoft.config.ConfigMail;
+import com.encosoft.dtos.ListarDetalleEncomiendasDTO;
 import com.encosoft.dtos.ListarEncomiendasDTO;
 import com.encosoft.interfaces.IEncomienda;
 import com.encosoft.modelo.Cliente;
@@ -9,6 +10,8 @@ import com.encosoft.modelo.DetalleEncomienda;
 import com.encosoft.modelo.Encomienda;
 import com.encosoft.util.Constantes;
 import com.encosoft.util.ReusableValidacion;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -178,7 +181,7 @@ public class ControlEncomienda extends ReusableValidacion implements IEncomienda
     }
 
     @Override
-    public List<ListarEncomiendasDTO> listarEncomiendasPersonalizado(String cliente, String receptor) {
+    public List<ListarEncomiendasDTO> listarEncomiendasPersonalizado(String cliente, String receptor, String idEncomienda) {
         List<ListarEncomiendasDTO> lista = new ArrayList<>();
         final String query = "SELECT e.id, a.`descripcion` agencia, CONCAT(c.`apepat`, ' ', c.`apemat`, ' ', c.`nombre`) cliente, "
                 + "CONCAT(e.`receptorapepat`, ' ', e.`receptorapemat`, ' ', e.`receptornombre`) receptor, "
@@ -188,12 +191,14 @@ public class ControlEncomienda extends ReusableValidacion implements IEncomienda
                 + "INNER JOIN agencias a ON e.`idagencia` = a.`id` "
                 + "INNER JOIN clientes c ON e.`idcliente` = c.`id` "
                 + "WHERE CONCAT(c.`apepat`, ' ', c.`apemat`, ' ', c.`nombre`) LIKE ? AND "
-                + "CONCAT(e.`receptorapepat`, ' ', e.`receptorapemat`, ' ', e.`receptornombre`) LIKE ? ";
+                + "CONCAT(e.`receptorapepat`, ' ', e.`receptorapemat`, ' ', e.`receptornombre`) LIKE ? AND "
+                + "e.id LIKE ?;";
 
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setString(1, cliente + "%");
             ps.setString(2, receptor + "%");
+            ps.setString(3, idEncomienda + "%");
             rs = ps.executeQuery();
             while (rs.next()) {
                 ListarEncomiendasDTO encomienda = new ListarEncomiendasDTO();

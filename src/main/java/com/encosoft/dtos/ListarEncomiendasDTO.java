@@ -69,4 +69,8 @@ public class ListarEncomiendasDTO {
         this.estado = estado;
     }
 
+    @Override
+    public String toString() {
+        return "ListarEncomiendasDTO{" + "id=" + id + ", agencia=" + agencia + ", cliente=" + cliente + ", receptor=" + receptor + ", fecha=" + fecha + ", precio=" + precio + ", estado=" + estado + '}';
+    }
 }

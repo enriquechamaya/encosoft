@@ -27,9 +27,9 @@
           <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
           <Component id="pnlDetalle" alignment="0" max="32767" attributes="0"/>
           <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel5" min="-2" pref="329" max="-2" attributes="0"/>
                           <Component id="txtCliente" min="-2" pref="378" max="-2" attributes="0"/>
@@ -41,9 +41,10 @@
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="317" max="-2" attributes="0"/>
-                      <Component id="btnBuscarEncomienda" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnDescargarEncomienda" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="btnBuscarEncomienda" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="btnListarTodo" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -69,9 +70,12 @@
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnBuscarEncomienda" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnListarTodo" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="btnBuscarEncomienda" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnListarTodo" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="btnDescargarEncomienda" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="140" max="-2" attributes="0"/>
@@ -210,6 +214,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnBuscarEncomienda">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/Images/lupa-pequena.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="BUSCAR ENCOMIENDA"/>
       </Properties>
       <Events>
@@ -218,10 +225,24 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnListarTodo">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/Images/lupa-pequena.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="LISTAR TODO"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnListarTodoActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnDescargarEncomienda">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/Images/descargar-encomienda.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="DESCARGAR ENCOMIENDA"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDescargarEncomiendaActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

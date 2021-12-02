@@ -51,5 +51,7 @@ public class Constantes {
     public static final String TITULO_REPORTE_ROLES = "ROLES";
     public static final String REPORTE_TIPO_DOCUMENTOS = "reporteTipoDocumentos";
     public static final String TITULO_REPORTE_TIPO_DOCUMENTOS = "TIPO DE DOCUMENTOS";
+    public static final String REPORTE_DESCARGA_ENCOMIENDA = "encomienda";
+    public static final String TITULO_REPORTE_DESCARGA_TIPO_DOCUMENTOS = "COMPROBANTE DE PAGO DE ENCOMIENDA";
 
 }
