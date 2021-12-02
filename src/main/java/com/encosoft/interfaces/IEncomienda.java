@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface IEncomienda extends ICrud<Encomienda>{
       
-    List<ListarEncomiendasDTO> listarEncomiendasPersonalizado(String idAgencia, String fechaInicio, String fechaFin, String cliente, String receptor);
+    List<ListarEncomiendasDTO> listarEncomiendasPersonalizado(String cliente, String receptor);
 }

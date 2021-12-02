@@ -25,14 +25,13 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
 
     Map<Integer, String> agenciaMap = new HashMap<>();
 
-    String idAgencia = "", fechaInicio = "", fechaFin = "", cliente = "", receptor = "";
+    String cliente = "", receptor = "";
 
     /**
      * Creates new form ListarEncomiendas
      */
     public ListarEncomiendas() {
         initComponents();
-        listarAgencias();
         listarEncomienda();
         pnlDetalle.setVisible(false);
     }
@@ -56,7 +55,7 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
         modelo.addColumn("ESTADO");
 
         modelo.setRowCount(0);
-        List<ListarEncomiendasDTO> lista = controlEncomienda.listarEncomiendasPersonalizado(idAgencia, fechaInicio, fechaFin, cliente, receptor);
+        List<ListarEncomiendasDTO> lista = controlEncomienda.listarEncomiendasPersonalizado(cliente, receptor);
         for (ListarEncomiendasDTO e : lista) {
             Object data[] = {e.getId(), e.getAgencia(), e.getCliente(), e.getReceptor(), e.getFecha(), e.getPrecio(), e.getEstado()};
             modelo.addRow(data);
@@ -90,17 +89,6 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
         tblDetalle.clearSelection();
     }
 
-    void listarAgencias() {
-        cboAgencia.removeAllItems();
-        ControlAgencia controlAgencia = new ControlAgencia();
-        List<Agencia> lista = controlAgencia.listar();
-        cboAgencia.addItem("SELECCIONAR");
-        for (Agencia agencia : lista) {
-            agenciaMap.put(agencia.getId(), agencia.getDescripcion());
-            cboAgencia.addItem(agencia.getDescripcion());
-        }
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -117,12 +105,6 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
         pnlDetalle = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblDetalle = new javax.swing.JTable();
-        jLabel2 = new javax.swing.JLabel();
-        cboAgencia = new javax.swing.JComboBox<>();
-        jLabel3 = new javax.swing.JLabel();
-        txtFechaInicio = new javax.swing.JFormattedTextField();
-        txtFechaFin = new javax.swing.JFormattedTextField();
-        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         txtCliente = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
@@ -190,7 +172,7 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
             pnlDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlDetalleLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlDetalleLayout.setVerticalGroup(
@@ -201,21 +183,23 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel2.setText("AGENCIAS:");
-
-        cboAgencia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jLabel3.setText("FECHA INICIO:");
-
-        jLabel4.setText("FECHA FIN:");
-
         jLabel5.setText("CLIENTE:");
 
         jLabel6.setText("RECEPTOR:");
 
         btnBuscarEncomienda.setText("BUSCAR ENCOMIENDA");
+        btnBuscarEncomienda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarEncomiendaActionPerformed(evt);
+            }
+        });
 
         btnListarTodo.setText("LISTAR TODO");
+        btnListarTodo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListarTodoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -229,28 +213,14 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(cboAgencia, 0, 230, Short.MAX_VALUE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtFechaInicio)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtFechaFin)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtReceptor)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtReceptor)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(299, 299, 299)
+                        .addGap(317, 317, 317)
                         .addComponent(btnBuscarEncomienda)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnListarTodo)))
@@ -260,21 +230,6 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(cboAgencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel4)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -289,9 +244,9 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBuscarEncomienda)
                     .addComponent(btnListarTodo))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pnlDetalle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -304,20 +259,28 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
         if (filaSeleccionada >= 0) {
             pnlDetalle.setVisible(true);
             int idEncomienda = Integer.parseInt(tblEncomiendas.getValueAt(filaSeleccionada, 0).toString());
-            System.out.println(idEncomienda);
             listarDetalleEncomienda(idEncomienda);
         }
     }//GEN-LAST:event_tblEncomiendasMouseClicked
+
+    private void btnBuscarEncomiendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarEncomiendaActionPerformed
+        if (!txtCliente.getText().trim().isEmpty()) cliente = txtCliente.getText();
+        if (!txtReceptor.getText().trim().isEmpty()) receptor = txtReceptor.getText();
+        listarEncomienda();
+        ((DefaultTableModel)tblDetalle.getModel()).setRowCount(0);
+    }//GEN-LAST:event_btnBuscarEncomiendaActionPerformed
+
+    private void btnListarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarTodoActionPerformed
+        cliente = ""; receptor = "";
+        listarEncomienda();
+        ((DefaultTableModel)tblDetalle.getModel()).setRowCount(0);
+    }//GEN-LAST:event_btnListarTodoActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscarEncomienda;
     private javax.swing.JButton btnListarTodo;
-    private javax.swing.JComboBox<String> cboAgencia;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
@@ -327,8 +290,6 @@ public class ListarEncomiendas extends javax.swing.JInternalFrame {
     private javax.swing.JTable tblDetalle;
     private javax.swing.JTable tblEncomiendas;
     private javax.swing.JTextField txtCliente;
-    private javax.swing.JFormattedTextField txtFechaFin;
-    private javax.swing.JFormattedTextField txtFechaInicio;
     private javax.swing.JTextField txtReceptor;
     // End of variables declaration//GEN-END:variables
 }

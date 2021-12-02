@@ -178,7 +178,7 @@ public class ControlEncomienda extends ReusableValidacion implements IEncomienda
     }
 
     @Override
-    public List<ListarEncomiendasDTO> listarEncomiendasPersonalizado(String idAgencia, String fechaInicio, String fechaFin, String cliente, String receptor) {
+    public List<ListarEncomiendasDTO> listarEncomiendasPersonalizado(String cliente, String receptor) {
         List<ListarEncomiendasDTO> lista = new ArrayList<>();
         final String query = "SELECT e.id, a.`descripcion` agencia, CONCAT(c.`apepat`, ' ', c.`apemat`, ' ', c.`nombre`) cliente, "
                 + "CONCAT(e.`receptorapepat`, ' ', e.`receptorapemat`, ' ', e.`receptornombre`) receptor, "
@@ -186,10 +186,14 @@ public class ControlEncomienda extends ReusableValidacion implements IEncomienda
                 + "e.`preciototal`, IF(e.`estado` = 1, 'ACTIVO', 'INACTIVO') estado "
                 + "FROM encomienda e "
                 + "INNER JOIN agencias a ON e.`idagencia` = a.`id` "
-                + "INNER JOIN clientes c ON e.`idcliente` = c.`id`; ";
+                + "INNER JOIN clientes c ON e.`idcliente` = c.`id` "
+                + "WHERE CONCAT(c.`apepat`, ' ', c.`apemat`, ' ', c.`nombre`) LIKE ? AND "
+                + "CONCAT(e.`receptorapepat`, ' ', e.`receptorapemat`, ' ', e.`receptornombre`) LIKE ? ";
+
         try {
             ps = con.obtenerConexion().prepareStatement(query);
-
+            ps.setString(1, cliente + "%");
+            ps.setString(2, receptor + "%");
             rs = ps.executeQuery();
             while (rs.next()) {
                 ListarEncomiendasDTO encomienda = new ListarEncomiendasDTO();
