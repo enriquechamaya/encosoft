@@ -15,6 +15,7 @@ public class Encomienda {
     private String fecha;
     private double preciototal;
     private List<DetalleEncomienda> detalleEncomiendas;
+    private int estado;
 
     public int getId() {
         return id;
@@ -104,9 +105,17 @@ public class Encomienda {
         this.detalleEncomiendas = detalleEncomiendas;
     }
 
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
     @Override
     public String toString() {
-        return "Encomienda{" + "id=" + id + ", idagencia=" + idagencia + ", idtipodocumento=" + idtipodocumento + ", numerodocumento=" + numerodocumento + ", receptorapepat=" + receptorapepat + ", receptorapemat=" + receptorapemat + ", receptornombres=" + receptornombres + ", idcliente=" + idcliente + ", fecha=" + fecha + ", preciototal=" + preciototal + '}';
+        return "Encomienda{" + "id=" + id + ", idagencia=" + idagencia + ", idtipodocumento=" + idtipodocumento + ", numerodocumento=" + numerodocumento + ", receptorapepat=" + receptorapepat + ", receptorapemat=" + receptorapemat + ", receptornombres=" + receptornombres + ", idcliente=" + idcliente + ", fecha=" + fecha + ", preciototal=" + preciototal + ", estado=" + estado + '}';
     }
 
 }

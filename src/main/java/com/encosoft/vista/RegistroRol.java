@@ -5,58 +5,137 @@
  */
 package com.encosoft.vista;
 
-import com.encosoft.conexion.Conexion;
 import com.encosoft.controlador.ControlRol;
 import com.encosoft.modelo.Rol;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import javax.swing.JOptionPane;
+import com.encosoft.util.Utilitario;
+import java.util.List;
 import javax.swing.table.DefaultTableModel;
-
 /**
  *
  * @author Saul
  */
 public class RegistroRol extends javax.swing.JInternalFrame {
 
-    ControlRol obj = new ControlRol();
+    ControlRol controlRol = new ControlRol();
+     boolean esActualizar = false;
 
     public RegistroRol() {
         initComponents();
-        muestra();
+         listarRol(controlRol.listar());
+        Utilitario.LlenarComboBoxEstado(cboEstado);
+        cambiarBotonGuardar();
     }
 
-    void muestra() {
-        DefaultTableModel dt = (DefaultTableModel) TblRol.getModel();
-        dt.setRowCount(0);
-        for (Rol x : obj.listar()) {
-            Object v[] = {x.getId(), x.getDescripcion(), x.getEstado()};
-            dt.addRow(v);
+    void listarRol(List<Rol> lista) {
+        DefaultTableModel modelo = new DefaultTableModel();
+        tblRol.setModel(modelo);
+
+        modelo.addColumn("ID");
+        modelo.addColumn("DESCRIPCION");
+        modelo.addColumn("ESTADO");
+
+        modelo.setRowCount(0);
+        for (Rol td : lista) {
+            Object data[] = {td.getId(), td.getDescripcion(), (td.getEstado() == 1 ? "ACTIVO" : "INACTIVO")};
+            modelo.addRow(data);
         }
     }
+    void registrar() {
+        if (esActualizar) {
+            limpiar();
+        } else {
+            if (Utilitario.validarCamposVacios(txtDescripcion)) {
+                return;
+            }
+            Rol td = new Rol();
+            td.setDescripcion(txtDescripcion.getText());
 
-    void muestraXid(int id) {
-
-        DefaultTableModel dt = (DefaultTableModel) TblRol.getModel();
-        //Acumulador de total y contador
-
-        dt.setRowCount(0);
-        for (Rol x : obj.obtenerPorId(id)) {
-            Object v[] = {x.getId(), x.getDescripcion(), x.getEstado()};
-            dt.addRow(v);
-
+            boolean esExito = controlRol.insertar(td);
+            if (esExito) {
+                listarRol(controlRol.listar());
+                limpiar();
+                Utilitario.MensajeExitoGenerico();
+            } else {
+                Utilitario.MensajeErrorGenerico();
+            }
         }
-
     }
-
-    void limpiar() {
-        txtId.setText("");
-        txtDescripcion.setText("");
-        CboRol.setSelectedIndex(0);
-        txtDescripcion.requestFocus();
-
+    
+     void obtenerRol() {
+        int fila = tblRol.getSelectedRow();
+        txtId.setText(tblRol.getValueAt(fila, 0).toString());
+        txtDescripcion.setText(tblRol.getValueAt(fila, 1).toString());
+        cboEstado.setSelectedItem(tblRol.getValueAt(fila, 2).toString());
+        esActualizar = true;
+        cambiarBotonGuardar();
     }
+     
+      void editar() {
+        int fila = tblRol.getSelectedRow();
+        if (fila >= 0) {
+            if (Utilitario.validarCamposVacios(txtDescripcion)) {
+                return;
+            }
+            if (Utilitario.validarCamposVacios(cboEstado)) {
+                return;
+            }
+            Rol td = new Rol();
+            td.setId(Integer.parseInt(txtId.getText()));
+            td.setDescripcion(txtDescripcion.getText());
+            td.setEstado(Utilitario.obtenerIdEstado(cboEstado));
+
+            boolean esExito = controlRol.actualizar(td);
+            if (esExito) {
+                listarRol(controlRol.listar());
+                limpiar();
+                Utilitario.MensajeActualizacionExitoGenerico();
+            } else {
+                Utilitario.MensajeErrorGenerico();
+            }
+        } else {
+            Utilitario.MensajeSeleccionarRegistro();
+        }
+    }
+      
+    void cambiarBotonGuardar() {
+        if (esActualizar) {
+            btnGuardar.setText("Nuevo");
+            lblEstado.setVisible(true);
+            cboEstado.setVisible(true);
+        } else {
+            txtId.setText("AUTOGENERADO");
+            btnGuardar.setText("Guardar");
+            lblEstado.setVisible(false);
+            cboEstado.setVisible(false);
+        }
+    }
+    
+    
+    void eliminar() {
+        int fila = tblRol.getSelectedRow();
+        if (fila >= 0) {
+            int id = Integer.parseInt(tblRol.getValueAt(fila, 0).toString());
+            boolean esExito = controlRol.eliminar(id);
+            if (esExito) {
+                listarRol(controlRol.listar());
+                limpiar();
+                Utilitario.MensajeEliminacionExitoGenerico();
+            } else {
+                Utilitario.MensajeErrorGenerico();
+            }
+        } else {
+            Utilitario.MensajeSeleccionarRegistro();
+        }
+    }
+    
+     void limpiar() {
+        Utilitario.limpiarTextbox(txtDescripcion, txtBusqueda);
+        Utilitario.limpiarCombobox(cboEstado);
+        tblRol.clearSelection();
+        esActualizar = false;
+        cambiarBotonGuardar();
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -68,24 +147,24 @@ public class RegistroRol extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        lblEstado = new javax.swing.JLabel();
         txtId = new javax.swing.JTextField();
         txtDescripcion = new javax.swing.JTextField();
-        CboRol = new javax.swing.JComboBox<>();
+        cboEstado = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        btnGuardarRol = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnGuardar = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
-        BtnBuscar = new javax.swing.JButton();
+        btnBusqueda = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
-        txtbuscar = new javax.swing.JTextField();
+        txtBusqueda = new javax.swing.JTextField();
         jSeparator3 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
-        TblRol = new javax.swing.JTable();
+        tblRol = new javax.swing.JTable();
         jSeparator4 = new javax.swing.JSeparator();
-        jButton1 = new javax.swing.JButton();
+        btnListarTodo = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -97,69 +176,68 @@ public class RegistroRol extends javax.swing.JInternalFrame {
         jLabel1.setText("ID:");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(39, 27, -1, -1));
 
-        jLabel2.setText("Estado");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
+        lblEstado.setText("Estado");
+        getContentPane().add(lblEstado, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
 
         txtId.setEnabled(false);
-        getContentPane().add(txtId, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 100, -1));
-        getContentPane().add(txtDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 100, -1));
+        getContentPane().add(txtId, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 140, -1));
+        getContentPane().add(txtDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 140, -1));
 
-        CboRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Activo", "Inactivo" }));
-        CboRol.addActionListener(new java.awt.event.ActionListener() {
+        cboEstado.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                CboRolActionPerformed(evt);
+                cboEstadoActionPerformed(evt);
             }
         });
-        getContentPane().add(CboRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 90, 100, -1));
+        getContentPane().add(cboEstado, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 90, 140, -1));
 
         jLabel3.setText("Decripcion:");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, -1, -1));
 
-        btnGuardarRol.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/guardar.png"))); // NOI18N
-        btnGuardarRol.setText("Guardar");
-        btnGuardarRol.addActionListener(new java.awt.event.ActionListener() {
+        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/guardar.png"))); // NOI18N
+        btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarRolActionPerformed(evt);
+                btnGuardarActionPerformed(evt);
             }
         });
-        getContentPane().add(btnGuardarRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 150, 110, -1));
+        getContentPane().add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 150, 110, -1));
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/editar.png"))); // NOI18N
-        jButton2.setText("Editar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/editar.png"))); // NOI18N
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnEditarActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, 110, -1));
+        getContentPane().add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, 110, -1));
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/elimina.png"))); // NOI18N
-        jButton3.setText("Eliminar");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/elimina.png"))); // NOI18N
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnEliminarActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 150, 110, -1));
+        getContentPane().add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 150, 110, -1));
         getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 590, 20));
         getContentPane().add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 570, 20));
 
-        BtnBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa.png"))); // NOI18N
-        BtnBuscar.setText("Mostrar Rol");
-        BtnBuscar.addActionListener(new java.awt.event.ActionListener() {
+        btnBusqueda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa.png"))); // NOI18N
+        btnBusqueda.setText("Mostrar Rol");
+        btnBusqueda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BtnBuscarActionPerformed(evt);
+                btnBusquedaActionPerformed(evt);
             }
         });
-        getContentPane().add(BtnBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 220, -1, -1));
+        getContentPane().add(btnBusqueda, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 220, -1, -1));
 
         jLabel11.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
         jLabel11.setText("Busca:");
         getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, -1, -1));
-        getContentPane().add(txtbuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 90, -1));
+        getContentPane().add(txtBusqueda, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 90, -1));
         getContentPane().add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 200, 570, 20));
 
-        TblRol.setModel(new javax.swing.table.DefaultTableModel(
+        tblRol.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -167,109 +245,89 @@ public class RegistroRol extends javax.swing.JInternalFrame {
                 "ID", "Descripcion", "Estado"
             }
         ));
-        TblRol.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblRol.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TblRolMouseClicked(evt);
+                tblRolMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(TblRol);
+        jScrollPane1.setViewportView(tblRol);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 520, 130));
         getContentPane().add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 570, 20));
 
-        jButton1.setText("Listar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnListarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/lupa.png"))); // NOI18N
+        btnListarTodo.setText("Listar todo");
+        btnListarTodo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnListarTodoActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(499, 223, 70, 40));
+        getContentPane().add(btnListarTodo, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 210, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnGuardarRolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarRolActionPerformed
-        Rol u = new Rol();
-        u.setDescripcion(txtDescripcion.getText());
-        u.setEstado(CboRol.getSelectedIndex());
-
-        obj.insertar(u);
-        muestra();
-        limpiar();
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+ registrar();       
 
 
-    }//GEN-LAST:event_btnGuardarRolActionPerformed
+    }//GEN-LAST:event_btnGuardarActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        Rol u = new Rol();
-        u.setDescripcion(txtDescripcion.getText());
-        u.setEstado(CboRol.getSelectedIndex());
-        u.setId(Integer.parseInt(txtId.getText()));
-        obj.actualizar(u);
-        muestra();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+  editar();      
+    }//GEN-LAST:event_btnEditarActionPerformed
 
-    private void TblRolMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TblRolMouseClicked
-        // MODIFICAR DATOS CON MOUSE CLICK - el código debe estar de forma global
-
-        int fila = TblRol.getSelectedRow();//Devuelve la fila seleccionada
-
-        txtId.setText(TblRol.getValueAt(fila, 0).toString());
-        txtDescripcion.setText(TblRol.getValueAt(fila, 1).toString());
-        CboRol.setSelectedItem(TblRol.getValueAt(fila, 2).toString());
+    private void tblRolMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblRolMouseClicked
+   
+ obtenerRol();
 
 
+    }//GEN-LAST:event_tblRolMouseClicked
 
-    }//GEN-LAST:event_TblRolMouseClicked
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+ eliminar();      
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        obj.eliminar(Integer.parseInt(txtId.getText()));
-        muestra();
-        limpiar();
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void BtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBuscarActionPerformed
-
-        Rol u = new Rol();
-        Integer id = Integer.parseInt(txtbuscar.getText());
-
-        obj.obtenerPorId(id);
-
-        muestraXid(id);
+    private void btnBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBusquedaActionPerformed
+ if (!txtBusqueda.getText().isEmpty()) {
+            listarRol(controlRol.listarPorDescripcion(txtBusqueda.getText().trim()));
+        } else {
+            Utilitario.MensajeCampoVacio("busqueda");
+        }
+    
 
 
-    }//GEN-LAST:event_BtnBuscarActionPerformed
+    }//GEN-LAST:event_btnBusquedaActionPerformed
 
-    private void CboRolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CboRolActionPerformed
-        int s[] = {1, 2};
+    private void cboEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboEstadoActionPerformed
+    
 
+    }//GEN-LAST:event_cboEstadoActionPerformed
 
-    }//GEN-LAST:event_CboRolActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       muestra();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnListarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarTodoActionPerformed
+   listarRol(controlRol.listar());      
+    }//GEN-LAST:event_btnListarTodoActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BtnBuscar;
-    private javax.swing.JComboBox<String> CboRol;
-    private javax.swing.JTable TblRol;
-    private javax.swing.JButton btnGuardarRol;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton btnBusqueda;
+    private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnListarTodo;
+    private javax.swing.JComboBox<String> cboEstado;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JLabel lblEstado;
+    private javax.swing.JTable tblRol;
+    private javax.swing.JTextField txtBusqueda;
     private javax.swing.JTextField txtDescripcion;
     private javax.swing.JTextField txtId;
-    private javax.swing.JTextField txtbuscar;
     // End of variables declaration//GEN-END:variables
 }

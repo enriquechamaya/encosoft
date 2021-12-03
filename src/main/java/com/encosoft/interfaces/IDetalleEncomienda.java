@@ -5,12 +5,15 @@
  */
 package com.encosoft.interfaces;
 
+import com.encosoft.dtos.ListarDetalleEncomiendasDTO;
 import com.encosoft.modelo.DetalleEncomienda;
+import java.util.List;
 
 /**
  *
  * @author echamaya
  */
-public interface IDetalleEncomienda extends ICrud<DetalleEncomienda>{
-    
+public interface IDetalleEncomienda extends ICrud<DetalleEncomienda> {
+
+    List<ListarDetalleEncomiendasDTO> listarDetalleEncomiendaPersonalizado(int idEncomienda);
 }
