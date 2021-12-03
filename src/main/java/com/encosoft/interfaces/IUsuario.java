@@ -14,4 +14,6 @@ import java.util.List;
  */
 public interface IUsuario extends ICrud<Usuario>{
       List<Usuario> listarPorUsuario(String descripcion);
+   
+
 }

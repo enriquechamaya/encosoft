@@ -41,6 +41,7 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
             cboRol.addItem(rol.getDescripcion());
         }
     }
+    ///a
 
     public void listarAgencias() {
         ControlAgencia controlAgencia = new ControlAgencia();
