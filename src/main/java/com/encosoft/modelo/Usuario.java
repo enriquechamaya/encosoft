@@ -9,6 +9,8 @@ public class Usuario {
     private String contrasena;
     private int estado;
 
+
+ 
     public int getId() {
         return id;
     }
@@ -57,9 +59,13 @@ public class Usuario {
         this.estado = estado;
     }
 
+
+    
     @Override
     public String toString() {
         return "Usuario{" + "id=" + id + ", idrol=" + idrol + ", idagencia=" + idagencia + ", usuario=" + usuario + ", contrasena=" + contrasena + ", estado=" + estado + '}';
     }
+
+    
 
 }
