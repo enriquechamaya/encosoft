@@ -9,6 +9,7 @@ import com.encosoft.modelo.Encomienda;
 import com.encosoft.modelo.Productos;
 import com.encosoft.modelo.Rol;
 import com.encosoft.modelo.TipoDocumento;
+import com.encosoft.modelo.Usuario;
 import com.encosoft.util.Constantes;
 import com.encosoft.util.Utilitario;
 import com.itextpdf.text.BaseColor;
@@ -145,12 +146,12 @@ public class ControlReportes {
         cabeceraReporteDescarga("ID", "USUARIO", "ESTADO");
 
         ControlUsuarios controlUsuarios = new ControlUsuarios();
-        /*List<Usuario> lista = controlUsuarios.listar();
+        List<Usuario> lista = controlUsuarios.listar();
         for (Usuario x : lista) {
             tabla.addCell("" + x.getId());
             tabla.addCell(x.getUsuario());
             tabla.addCell(Utilitario.obtenerEstadoActivoInactivo(x.getEstado()));
-        }*/
+        }
 
         finReporte();
     }

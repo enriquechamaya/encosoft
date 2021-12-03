@@ -6,6 +6,9 @@
 package com.encosoft.vista;
 
 import com.encosoft.conexion.Conexion;
+import com.encosoft.controlador.ControlAgencia;
+import com.encosoft.controlador.ControlRol;
+import com.encosoft.modelo.Rol;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,6 +28,43 @@ public class Login extends javax.swing.JFrame {
 
     public Login() {
         initComponents();
+        setLocationRelativeTo(null);
+    }
+
+    void login() {
+        ControlAgencia controlAgencia = new ControlAgencia();
+        ControlRol controlRol = new ControlRol();
+        //Obtengo los valores ingresados
+        String user = txtUser.getText();
+        String pass = txtPass.getText();
+        //select username, password, privilegio from usuarios where activo = 1 and username= 'saul';
+        String url = " select idrol, idagencia, usuario from usuarios where estado = 1 and usuario='" + user + "' and contrasena = '" + pass + "';";
+
+        try {
+            con = c.obtenerConexion();
+            ps = con.prepareStatement(url);
+            rs = ps.executeQuery();
+
+            if (!rs.isBeforeFirst() && rs.getRow() == 0) {
+                JOptionPane.showMessageDialog(null, "El usuario no existe ene la Base de Datos.", "AVISO", JOptionPane.WARNING_MESSAGE);
+            } else {
+                int idRol = 0;
+                String usuario = "", agencia = "", rolDescripcion = "";
+                Rol rol = null;
+                while (rs.next()) {
+                    usuario = rs.getString(3);
+                    agencia = controlAgencia.obtenerPorId(rs.getString(2)).getDescripcion();
+                    rol = controlRol.obtenerPorId(rs.getString(1));
+                    idRol = rol.getId();
+                    rolDescripcion = rol.getDescripcion();
+                    MenuPrincipal formtrabajador = new MenuPrincipal(usuario, agencia, rolDescripcion, idRol);
+                    formtrabajador.setVisible(true);
+                    this.dispose();
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.toString());
+        }
     }
 
     /**
@@ -67,6 +107,12 @@ public class Login extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Roboto", 1, 24)); // NOI18N
         jLabel4.setText("Bienvenidos a EncoSoft");
+
+        txtPass.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPassActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -119,35 +165,12 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
-
-        //Obtengo los valores ingresados
-        String user = txtUser.getText();
-        String pass = txtPass.getText();
-
-        //select username, password, privilegio from usuarios where activo = 1 and username= 'saul';
-        String url = " select *from usuarios where estado = 1 and usuario='" + user + "'";
-
-        try {
-            con = c.obtenerConexion();
-            ps = con.prepareStatement(url);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-
-                MenuPrincipal formtrabajador = new MenuPrincipal();
-                formtrabajador.setVisible(true);
-                this.dispose();
-
-            } else {
-                //Si el usuario no existe
-                JOptionPane.showMessageDialog(null, "El usuario no existe ene la Base de Datos.", "AVISO", JOptionPane.WARNING_MESSAGE);
-
-            }
-
-        } catch (SQLException ex) {
-            System.out.println(ex.toString());
-        }
-
+        login();
     }//GEN-LAST:event_btnIngresarActionPerformed
+
+    private void txtPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPassActionPerformed
+        login();
+    }//GEN-LAST:event_txtPassActionPerformed
 
     /**
      * @param args the command line arguments

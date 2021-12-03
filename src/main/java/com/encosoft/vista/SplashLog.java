@@ -5,6 +5,10 @@
  */
 package com.encosoft.vista;
 
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+
 /**
  *
  * @author elins
@@ -17,7 +21,17 @@ public class SplashLog extends javax.swing.JFrame {
     public SplashLog() {
         initComponents();
         setLocationRelativeTo(null); // Centrar formulario
-        
+        //centerFrame();
+    }
+
+    private void centerFrame() {
+        Dimension windowSize = getSize();
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        Point centerPoint = ge.getCenterPoint();
+
+        int dx = centerPoint.x - windowSize.width / 2;
+        int dy = centerPoint.y - windowSize.height / 2;
+        setLocation(dx, dy);
     }
 
     /**
@@ -103,7 +117,7 @@ public class SplashLog extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-                try {
+        try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
@@ -120,24 +134,23 @@ public class SplashLog extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         SplashLog splash = new SplashLog(); //Inicializar formulario splash
-        splash.setVisible(true); 
-        try{
-            for(int i=0;i<=100;i++){ // Inicia el ciclo de la carga
+        splash.setVisible(true);
+        try {
+            for (int i = 0; i <= 100; i++) { // Inicia el ciclo de la carga
                 Thread.sleep(50);
                 splash.progreso.setValue(i);
-                splash.labelCarga.setText("Cargando: "+(Integer.toString(i))+"%");
-                if(i == 100){
+                splash.labelCarga.setText("Cargando: " + (Integer.toString(i)) + "%");
+                if (i == 100) {
                     splash.setVisible(false);
                     Login flogin = new Login();
                     flogin.setVisible(true);
                 }
             }
-            
-        }catch(Exception e){
-            
+
+        } catch (Exception e) {
+
         }
-        
-       
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

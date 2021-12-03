@@ -8,6 +8,7 @@ package com.encosoft.vista;
 import com.encosoft.controlador.ControlUsuarios;
 import com.encosoft.controlador.ControlRol;
 import com.encosoft.controlador.ControlAgencia;
+import com.encosoft.dtos.ListarUsuariosDTO;
 import com.encosoft.modelo.Usuario;
 import com.encosoft.modelo.Rol;
 import com.encosoft.modelo.Agencia;
@@ -22,13 +23,14 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
     ControlUsuarios controlUsuarios = new ControlUsuarios();
     boolean esActualizar = false;
     Map<Integer, String> categoriasMap = new HashMap<>();
+    Map<Integer, String> rolesMap = new HashMap<>();
 
     public RegistroUsuarios() {
         initComponents();
         Utilitario.LlenarComboBoxEstado(cboEstado);
         listarRoles();
         listarAgencias();
-        listarUsuarios(controlUsuarios.listar());
+        listarUsuarios(controlUsuarios.listarPorUsuario(""));
         cambiarBotonGuardar();
     }
 
@@ -37,7 +39,7 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
         List<Rol> lista = controlRol.listar();
         cboRol.addItem("SELECCIONAR");
         for (Rol rol : lista) {
-            categoriasMap.put(rol.getId(), rol.getDescripcion());
+            rolesMap.put(rol.getId(), rol.getDescripcion());
             cboRol.addItem(rol.getDescripcion());
         }
     }
@@ -53,22 +55,26 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
         }
     }
 
-    void listarUsuarios(List<Usuario> lista) {
+    void listarUsuarios(List<ListarUsuariosDTO> lista) {
         DefaultTableModel modelo = new DefaultTableModel();
         tblUsuarios.setModel(modelo);
 
         modelo.addColumn("ID");
         modelo.addColumn("IDROL");
+        modelo.addColumn("ROL");
         modelo.addColumn("IDAGENCIA");
+        modelo.addColumn("AGENCIA");
         modelo.addColumn("USUARIO");
         modelo.addColumn("CONTRASEÑA");
         modelo.addColumn("ESTADO");
 
         modelo.setRowCount(0);
-        for (Usuario td : lista) {
-            Object data[] = {td.getId(), td.getIdrol(), td.getIdagencia(), td.getUsuario(), td.getContrasena(), (td.getEstado() == 1 ? "ACTIVO" : "INACTIVO")};
+        for (ListarUsuariosDTO td : lista) {
+            Object data[] = {td.getId(), td.getIdrol(), td.getRol(), td.getIdagencia(), td.getAgencia(), td.getUsuario(), td.getContrasena(), (td.getEstado() == 1 ? "ACTIVO" : "INACTIVO")};
             modelo.addRow(data);
         }
+
+        Utilitario.ocultarColumnas(tblUsuarios, 1, 3);
     }
 
     void guardar() {
@@ -84,14 +90,14 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
 
             Usuario c = new Usuario();
 
-            c.setIdrol(Utilitario.obtenerIdComboBox(categoriasMap, cboRol));
+            c.setIdrol(Utilitario.obtenerIdComboBox(rolesMap, cboRol));
             c.setIdagencia(Utilitario.obtenerIdComboBox(categoriasMap, cboAgencia));
             c.setUsuario(txtUsuario.getText());
             c.setContrasena(txtPass.getText());
             c.setEstado(Utilitario.obtenerIdEstado(cboEstado));
             boolean esExito = controlUsuarios.insertar(c);
             if (esExito) {
-                listarUsuarios(controlUsuarios.listar());
+                listarUsuarios(controlUsuarios.listarPorUsuario(""));
                 limpiar();
                 Utilitario.MensajeExitoGenerico();
             } else {
@@ -103,11 +109,11 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
     void obtenerUsuario() {
         int fila = tblUsuarios.getSelectedRow();
         txtId.setText(tblUsuarios.getValueAt(fila, 0).toString());
-        cboRol.setSelectedItem(Utilitario.obtenerDescripcionComboBox(categoriasMap, Integer.parseInt(tblUsuarios.getValueAt(fila, 1).toString())));
-        cboAgencia.setSelectedItem(Utilitario.obtenerDescripcionComboBox(categoriasMap, Integer.parseInt(tblUsuarios.getValueAt(fila, 2).toString())));
-        txtUsuario.setText(tblUsuarios.getValueAt(fila, 3).toString());
-        txtPass.setText(tblUsuarios.getValueAt(fila, 4).toString());
-        cboEstado.setSelectedItem(tblUsuarios.getValueAt(fila, 5).toString());
+        cboRol.setSelectedItem(Utilitario.obtenerDescripcionComboBox(rolesMap, Integer.parseInt(tblUsuarios.getValueAt(fila, 1).toString())));
+        cboAgencia.setSelectedItem(Utilitario.obtenerDescripcionComboBox(categoriasMap, Integer.parseInt(tblUsuarios.getValueAt(fila, 3).toString())));
+        txtUsuario.setText(tblUsuarios.getValueAt(fila, 5).toString());
+        txtPass.setText(tblUsuarios.getValueAt(fila, 6).toString());
+        cboEstado.setSelectedItem(tblUsuarios.getValueAt(fila, 7).toString());
         esActualizar = true;
         cambiarBotonGuardar();
     }
@@ -123,7 +129,7 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
             }
             Usuario td = new Usuario();
             td.setId(Integer.parseInt(txtId.getText()));
-            td.setIdrol(Utilitario.obtenerIdComboBox(categoriasMap, cboRol));
+            td.setIdrol(Utilitario.obtenerIdComboBox(rolesMap, cboRol));
             td.setIdagencia(Utilitario.obtenerIdComboBox(categoriasMap, cboAgencia));
             td.setUsuario(txtUsuario.getText());
             td.setContrasena(txtPass.getText());
@@ -131,7 +137,7 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
 
             boolean esExito = controlUsuarios.actualizar(td);
             if (esExito) {
-                listarUsuarios(controlUsuarios.listar());
+                listarUsuarios(controlUsuarios.listarPorUsuario(""));
                 limpiar();
                 Utilitario.MensajeActualizacionExitoGenerico();
             } else {
@@ -142,7 +148,6 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
         }
     }
 
-    
     void cambiarBotonGuardar() {
         if (esActualizar) {
             btnGuardar.setText("Nuevo");
@@ -155,15 +160,14 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
             cboEstado.setVisible(false);
         }
     }
-    
-    
-     void eliminar() {
+
+    void eliminar() {
         int fila = tblUsuarios.getSelectedRow();
         if (fila >= 0) {
             int id = Integer.parseInt(tblUsuarios.getValueAt(fila, 0).toString());
             boolean esExito = controlUsuarios.eliminar(id);
             if (esExito) {
-                listarUsuarios(controlUsuarios.listar());
+                listarUsuarios(controlUsuarios.listarPorUsuario(""));
                 limpiar();
                 Utilitario.MensajeEliminacionExitoGenerico();
             } else {
@@ -173,15 +177,15 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
             Utilitario.MensajeSeleccionarRegistro();
         }
     }
-     
-     
-      void limpiar() {
+
+    void limpiar() {
         Utilitario.limpiarTextbox(txtUsuario, txtPass);
-        Utilitario.limpiarCombobox(cboEstado, cboAgencia,cboRol);
+        Utilitario.limpiarCombobox(cboEstado, cboAgencia, cboRol);
         tblUsuarios.clearSelection();
         esActualizar = false;
         cambiarBotonGuardar();
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -328,23 +332,23 @@ public class RegistroUsuarios extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnListarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarTodoActionPerformed
-listarUsuarios(controlUsuarios.listar());
+        listarUsuarios(controlUsuarios.listarPorUsuario(""));
     }//GEN-LAST:event_btnListarTodoActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-         eliminar();
+        eliminar();
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-      guardar();
+        guardar();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-     editar();
+        editar();
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBusquedaActionPerformed
-     if (!txtBusqueda.getText().isEmpty()) {
+        if (!txtBusqueda.getText().isEmpty()) {
             listarUsuarios(controlUsuarios.listarPorUsuario(txtBusqueda.getText().trim()));
         } else {
             Utilitario.MensajeCampoVacio("busqueda");
@@ -353,7 +357,7 @@ listarUsuarios(controlUsuarios.listar());
     }//GEN-LAST:event_btnBusquedaActionPerformed
 
     private void tblUsuariosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUsuariosMouseClicked
-     obtenerUsuario();
+        obtenerUsuario();
     }//GEN-LAST:event_tblUsuariosMouseClicked
 
 

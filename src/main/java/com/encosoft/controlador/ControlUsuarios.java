@@ -6,6 +6,7 @@
 package com.encosoft.controlador;
 
 import com.encosoft.conexion.Conexion;
+import com.encosoft.dtos.ListarUsuariosDTO;
 import com.encosoft.interfaces.IUsuario;
 import com.encosoft.modelo.Usuario;
 import com.encosoft.util.Constantes;
@@ -32,21 +33,26 @@ public class ControlUsuarios extends ReusableValidacion implements IUsuario {
     }
 
     @Override
-    public List<Usuario> listarPorUsuario(String descripcion) {
-        List<Usuario> lista = new ArrayList<>();
-        final String query = "select * from usuarios where usuario like ?;";
+    public List<ListarUsuariosDTO> listarPorUsuario(String descripcion) {
+        List<ListarUsuariosDTO> lista = new ArrayList<>();
+        final String query = "SELECT u.*, r.`descripcion` rol, a.`descripcion` agencia FROM usuarios u "
+                + "INNER JOIN rol r ON u.`idrol` = r.`id` "
+                + "INNER JOIN agencias a ON u.`idagencia` = a.`id` "
+                + "WHERE u.`usuario` LIKE ?;";
         try {
             ps = con.obtenerConexion().prepareStatement(query);
             ps.setString(1, descripcion + "%");
             rs = ps.executeQuery();
             while (rs.next()) {
-                Usuario usuario = new Usuario();
+                ListarUsuariosDTO usuario = new ListarUsuariosDTO();
                 usuario.setId(rs.getInt(1));
                 usuario.setIdrol(rs.getInt(2));
                 usuario.setIdagencia(rs.getInt(3));
                 usuario.setUsuario(rs.getString(4));
                 usuario.setContrasena(rs.getString(5));
                 usuario.setEstado(rs.getInt(6));
+                usuario.setRol(rs.getString(7));
+                usuario.setAgencia(rs.getString(8));
                 lista.add(usuario);
             }
         } catch (SQLException e) {
@@ -170,4 +176,3 @@ public class ControlUsuarios extends ReusableValidacion implements IUsuario {
         return lista;
     }
 }
-

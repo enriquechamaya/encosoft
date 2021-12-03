@@ -5,6 +5,7 @@
  */
 package com.encosoft.interfaces;
 
+import com.encosoft.dtos.ListarUsuariosDTO;
 import com.encosoft.modelo.Usuario;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @author Saul
  */
 public interface IUsuario extends ICrud<Usuario>{
-      List<Usuario> listarPorUsuario(String descripcion);
+      List<ListarUsuariosDTO> listarPorUsuario(String descripcion);
    
 
 }
